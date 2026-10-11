@@ -1,0 +1,8 @@
+# PyYAML from Ubuntu's archive: python3-yaml=5.3.1-1
+FROM docker.io/library/ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-yaml=5.3.1-1 \
+    && rm -rf /var/lib/apt/lists/*
+ENV PY=/usr/bin/python3
+COPY app/ /app/
+CMD ["sh", "-c", "exec $PY /app/app.py"]

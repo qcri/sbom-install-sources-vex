@@ -1,0 +1,4 @@
+debconf: delaying package configuration, since apt-utils is not installed
+  Running command git clone --filter=blob:none --quiet https://github.com/yaml/pyyaml.git /tmp/pip-req-build-cewqpxo3
+  Running command git checkout -q 20a120055ce2d702d8977c76b48033160b7b7c92
+3f0a74ce58391cf13ac81e4c9a5b2c829dc641e8bbe8fb2638e09b53cc9cbf85

@@ -1,0 +1,10 @@
+# PyYAML from PyPI (sdist, built in the image)
+FROM docker.io/library/ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-venv  \
+    && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install -q --no-cache-dir "pip==25.0.1"
+ENV PY=/opt/venv/bin/python
+RUN /opt/venv/bin/pip install --no-cache-dir "PyYAML==5.3.1"
+COPY app/ /app/
+CMD ["sh", "-c", "exec $PY /app/app.py"]

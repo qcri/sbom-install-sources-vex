@@ -1,0 +1,32 @@
+### os
+PRETTY_NAME="Ubuntu 20.04.6 LTS"
+VERSION_ID="20.04"
+### dpkg python3-yaml
+python3-yaml 5.3.1-1ubuntu0.1 install ok installed
+-- md5sums recorded by dpkg (constructor.py):
+3722e375c216e7b1703de5973f6f0ad6  usr/lib/python3/dist-packages/yaml/constructor.py
+-- dpkg --verify (no output = files match dpkg's md5sums):
+??5??????   /usr/share/doc/python3-yaml/README
+### python metadata (importlib.metadata)
+[
+  {
+    "metadata dir": "/usr/lib/python3/dist-packages/PyYAML-5.3.1.egg-info",
+    "Name": "PyYAML",
+    "Version": "5.3.1",
+    "RECORD": "none (not installed by pip)"
+  }
+]
+### ground truth (oracle)
+{
+  "python": "3.8.10",
+  "yaml.__version__": "5.3.1",
+  "yaml.__file__": "/usr/lib/python3/dist-packages/yaml/__init__.py",
+  "with_libyaml": true,
+  "constructor.py": "/usr/lib/python3/dist-packages/yaml/constructor.py",
+  "constructor.py sha256": "90d8247da78b524c10618fd0e857f54f3d97570fe91b5c5513d024ef3faf88b0",
+  "FullConstructor python/* tags": [
+    "python/name"
+  ],
+  "poc result": "ConstructorError: could not determine a constructor for the tag 'tag:yaml.org,2002:python/object/new:tuple'",
+  "vulnerable": false
+}

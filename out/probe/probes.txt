@@ -1,0 +1,13 @@
+grype, Trivy SBOM as-is                     : []
+grype, Trivy SBOM + purl upstream=pyyaml    : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+trivy, Syft SBOM as-is                      : ['pkg:pypi/pyyaml@5.3.1']
+trivy, Syft SBOM + trivy:SrcName=pyyaml     : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+pypi image + deb-patched VEX, grype --vex   : ['pkg:pypi/pyyaml@5.3.1']
+pypi image + deb-patched VEX, trivy --vex   : ['pkg:pypi/pyyaml@5.3.1']
+pypi image + deb-patched VEX, vexctl filter : []  (trivy SARIF)
+VEX a-no-alias     on local-backport SBOM: grype left 1, trivy left 0
+VEX a-no-alias     on pypi           SBOM: grype left 1, trivy left 1
+VEX b-plain-5.3.1  on local-backport SBOM: grype left 1, trivy left 1
+VEX b-plain-5.3.1  on pypi           SBOM: grype left 0, trivy left 0
+VEX c-no-version   on local-backport SBOM: grype left 0, trivy left 0
+VEX c-no-version   on pypi           SBOM: grype left 0, trivy left 0

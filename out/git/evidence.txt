@@ -1,0 +1,41 @@
+### os
+PRETTY_NAME="Ubuntu 20.04.6 LTS"
+VERSION_ID="20.04"
+### dpkg python3-yaml
+not installed
+### python metadata (importlib.metadata)
+[
+  {
+    "metadata dir": "/opt/venv/lib/python3.8/site-packages/PyYAML-5.3.1.dist-info",
+    "Name": "PyYAML",
+    "Version": "5.3.1",
+    "INSTALLER": "pip",
+    "REQUESTED": "",
+    "direct_url.json": "{\"url\": \"https://github.com/yaml/pyyaml.git\", \"vcs_info\": {\"commit_id\": \"538b5c93f7d5dee40322893c1e524e94a4f8bbde\", \"requested_revision\": \"5.3.1\", \"vcs\": \"git\"}}",
+    "RECORD check": {
+      "files ok": 24,
+      "mismatches": []
+    },
+    "RECORD constructor.py": {
+      "RECORD entry": "sha256=O3Uaf0_J_5GQBoeI9ZNhpJAhtdagr_X2HzDgGbZOMnw",
+      "sha256 hex": "3b751a7f4fc9ff9190068788f59361a49021b5d6a0aff5f61f30e019b64e327c"
+    }
+  }
+]
+### ground truth (oracle)
+{
+  "python": "3.8.10",
+  "yaml.__version__": "5.3.1",
+  "yaml.__file__": "/opt/venv/lib/python3.8/site-packages/yaml/__init__.py",
+  "with_libyaml": false,
+  "constructor.py": "/opt/venv/lib/python3.8/site-packages/yaml/constructor.py",
+  "constructor.py sha256": "3b751a7f4fc9ff9190068788f59361a49021b5d6a0aff5f61f30e019b64e327c",
+  "FullConstructor python/* tags": [
+    "python/module",
+    "python/name",
+    "python/object",
+    "python/object/new"
+  ],
+  "poc result": "(42,)",
+  "vulnerable": true
+}

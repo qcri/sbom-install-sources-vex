@@ -1,0 +1,533 @@
+{
+ "deb-unpatched|syft|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ],
+   [
+    "CVE-2020-14343",
+    "pkg:deb/ubuntu/python3-yaml@5.3.1-1?arch=amd64&distro=ubuntu-20.04&upstream=pyyaml"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ],
+   [
+    "CVE-2020-14343",
+    "pkg:deb/ubuntu/python3-yaml@5.3.1-1?arch=amd64&distro=ubuntu-20.04&upstream=pyyaml"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml",
+   "CVE-2020-14343-python3-yaml"
+  ]
+ },
+ "deb-unpatched|syft|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "deb-unpatched|trivy|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "deb-unpatched|trivy|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:deb/ubuntu/python3-yaml@5.3.1-1?arch=amd64&distro=ubuntu-20.04"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:deb/ubuntu/python3-yaml@5.3.1-1?arch=amd64&distro=ubuntu-20.04"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "deb-patched|syft|grype|vex": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml"
+  ]
+ },
+ "deb-patched|syft|trivy|vex": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "deb-patched|trivy|grype|vex": {
+  "truth": "not vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "deb-patched|trivy|trivy|vex": {
+  "truth": "not vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "pypi|syft|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml"
+  ]
+ },
+ "pypi|syft|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "pypi|trivy|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-PyYAML"
+  ]
+ },
+ "pypi|trivy|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "git|syft|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1?vcs_url=git%2Bhttps%3A%2F%2Fgithub.com%2Fyaml%2Fpyyaml.git%40538b5c93f7d5dee40322893c1e524e94a4f8bbde"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1?vcs_url=git%2Bhttps%3A%2F%2Fgithub.com%2Fyaml%2Fpyyaml.git%40538b5c93f7d5dee40322893c1e524e94a4f8bbde"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml"
+  ]
+ },
+ "git|syft|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1?vcs_url=git%2Bhttps:%2F%2Fgithub.com%2Fyaml%2Fpyyaml.git%40538b5c93f7d5dee40322893c1e524e94a4f8bbde"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1?vcs_url=git%2Bhttps:%2F%2Fgithub.com%2Fyaml%2Fpyyaml.git%40538b5c93f7d5dee40322893c1e524e94a4f8bbde"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "git|trivy|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-PyYAML"
+  ]
+ },
+ "git|trivy|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "local|syft|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml"
+  ]
+ },
+ "local|syft|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "local|trivy|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-PyYAML"
+  ]
+ },
+ "local|trivy|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "vex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1"
+   ]
+  ],
+  "suppressed": [],
+  "vexctl_left": [
+   "CVE-2020-14343"
+  ]
+ },
+ "local-backport|syft|grype|vex": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "fixed"
+   ]
+  ],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml"
+  ]
+ },
+ "local-backport|syft|grype|vex-vcnp": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "not_affected"
+   ]
+  ],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-pyyaml"
+  ]
+ },
+ "local-backport|syft|trivy|vex": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "fixed"
+   ]
+  ],
+  "vexctl_left": []
+ },
+ "local-backport|syft|trivy|vex-vcnp": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "not_affected"
+   ]
+  ],
+  "vexctl_left": []
+ },
+ "local-backport|trivy|grype|vex": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "fixed"
+   ]
+  ],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-PyYAML"
+  ]
+ },
+ "local-backport|trivy|grype|vex-vcnp": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "GHSA-8q59-q68h-6hv4",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "not_affected"
+   ]
+  ],
+  "vexctl_left": [
+   "GHSA-8q59-q68h-6hv4-PyYAML"
+  ]
+ },
+ "local-backport|trivy|trivy|vex": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "fixed"
+   ]
+  ],
+  "vexctl_left": []
+ },
+ "local-backport|trivy|trivy|vex-vcnp": {
+  "truth": "not vulnerable",
+  "novex": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+   ]
+  ],
+  "vex": [],
+  "suppressed": [
+   [
+    "CVE-2020-14343",
+    "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "not_affected"
+   ]
+  ],
+  "vexctl_left": []
+ },
+ "pypi-fixed|syft|grype|vex": {
+  "truth": "not vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "pypi-fixed|syft|trivy|vex": {
+  "truth": "not vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "pypi-fixed|trivy|grype|vex": {
+  "truth": "not vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "pypi-fixed|trivy|trivy|vex": {
+  "truth": "not vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ }
+}

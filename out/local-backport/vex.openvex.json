@@ -1,0 +1,26 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://example.com/vex/local-backport/vex",
+  "author": "Example PSIRT",
+  "role": "vendor",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2020-14343",
+        "aliases": [
+          "GHSA-8q59-q68h-6hv4"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+        }
+      ],
+      "status": "fixed",
+      "status_notes": "PoC result: ConstructorError: could not determine a constructor for the tag 'tag:yaml.org,2002:python/object/new:tuple'; constructor.py sha256 90d8247da78b524c...",
+      "timestamp": "2026-10-08T12:00:00Z"
+    }
+  ],
+  "timestamp": "2026-10-08T12:00:00Z"
+}

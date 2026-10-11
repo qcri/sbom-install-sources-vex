@@ -1,0 +1,38 @@
+### os
+PRETTY_NAME="Ubuntu 20.04.6 LTS"
+VERSION_ID="20.04"
+### dpkg python3-yaml
+not installed
+### python metadata (importlib.metadata)
+[
+  {
+    "metadata dir": "/opt/venv/lib/python3.8/site-packages/PyYAML-5.3.1+acme1.dist-info",
+    "Name": "PyYAML",
+    "Version": "5.3.1+acme1",
+    "INSTALLER": "pip",
+    "REQUESTED": "",
+    "direct_url.json": "{\"dir_info\": {}, \"url\": \"file:///src/pyyaml\"}",
+    "RECORD check": {
+      "files ok": 24,
+      "mismatches": []
+    },
+    "RECORD constructor.py": {
+      "RECORD entry": "sha256=kNgkfaeLUkwQYY_Q6Ff1Tz2XVw_pG1xVE9Ak7z-viLA",
+      "sha256 hex": "90d8247da78b524c10618fd0e857f54f3d97570fe91b5c5513d024ef3faf88b0"
+    }
+  }
+]
+### ground truth (oracle)
+{
+  "python": "3.8.10",
+  "yaml.__version__": "5.3.1",
+  "yaml.__file__": "/opt/venv/lib/python3.8/site-packages/yaml/__init__.py",
+  "with_libyaml": false,
+  "constructor.py": "/opt/venv/lib/python3.8/site-packages/yaml/constructor.py",
+  "constructor.py sha256": "90d8247da78b524c10618fd0e857f54f3d97570fe91b5c5513d024ef3faf88b0",
+  "FullConstructor python/* tags": [
+    "python/name"
+  ],
+  "poc result": "ConstructorError: could not determine a constructor for the tag 'tag:yaml.org,2002:python/object/new:tuple'",
+  "vulnerable": false
+}

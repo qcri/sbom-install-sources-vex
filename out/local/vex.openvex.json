@@ -1,0 +1,28 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://example.com/vex/local/vex",
+  "author": "Example PSIRT",
+  "role": "vendor",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2020-14343",
+        "aliases": [
+          "GHSA-8q59-q68h-6hv4"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:pypi/pyyaml@5.3.1"
+        }
+      ],
+      "status": "affected",
+      "status_notes": "PoC result: (42,); constructor.py sha256 3b751a7f4fc9ff91...",
+      "action_statement": "Upgrade PyYAML to \u003e= 5.4 (Ubuntu: python3-yaml 5.3.1-1ubuntu0.1), or replace yaml.full_load with yaml.safe_load in handle_upload().",
+      "action_statement_timestamp": "2026-10-08T12:00:00Z",
+      "timestamp": "2026-10-08T12:00:00Z"
+    }
+  ],
+  "timestamp": "2026-10-08T12:00:00Z"
+}
