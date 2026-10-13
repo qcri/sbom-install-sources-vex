@@ -1,6 +1,7 @@
 syft:  1.54.1  (image digest sha256:507b76f097cd0f4a0f998a346afe61f5776329913d6ab3c0bd678b6635356120)
-grype: 0.120.1  db schema v6.1.10, built 2026-10-08T06:33:47Z
-trivy: 0.75.0  db 2026-10-07T07:38:55.515026687Z
+grype: 0.120.1  db schema v6.1.10, built 2026-10-08T06:33:47Z  (image digest sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe, pinned 2026-10-13)
+trivy: 0.75.0  db 2026-10-07T07:38:55.515026687Z  (image digest sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa, pinned 2026-10-13)
 vexctl: v0.4.4
-base image: ubuntu:20.04 sha256:c664f8f86ed5a386b0a340d981b8f81714e21a8b9c73f658c4bea56aa179d54a
+base image: ubuntu:20.04 sha256:c664f8f86ed5a386b0a340d981b8f81714e21a8b9c73f658c4bea56aa179d54a (linux/amd64; pinned in variants/*/Containerfile)
 PyYAML sdist sha256: b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d (matches PyPI)
+out/probe/ regenerated 2026-10-13 from the committed SBOMs and scans: grype db v6.1.10 built 2026-10-13T06:35:20Z, trivy db 2026-10-13T06:41:11Z
