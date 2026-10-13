@@ -1,6 +1,6 @@
 # Same library, seven installs: what SBOMs, scanners and VEX miss
 
-**Question.** Install the same vulnerable library (PyYAML 5.3.1, CVE-2020-14343) in different ways: Ubuntu apt, PyPI, git, a local source tree, and a local backport. Then ask three things:
+**Question.** Install the same vulnerable library (PyYAML 5.3.1, CVE-2020-14343) in different ways: Ubuntu apt, PyPI, git, a local source tree, and a local backport (a 5.3.1 rebuild with the fix patched in). Then ask three things:
 1. Does each SBOM generator identify the component correctly?
 2. Does each scanner report the vulnerability correctly?
 3. Does a correct supplier VEX statement actually get applied?
