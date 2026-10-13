@@ -1,0 +1,7 @@
+# Build context for variants/*/Containerfile: only app/ and src/pyyaml-* are used.
+# Keeps the vulnerability DBs (.cache, several GB) and image tars (out/) out of every build.
+.git
+.cache
+tools
+out
+src/dl
