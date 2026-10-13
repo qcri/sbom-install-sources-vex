@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img">
+<title>Seven installs, five identities, two versions of the code</title>
+<desc>Each install (centre) is linked to the PURLs Syft records for it (left) and to the version of yaml/constructor.py it contains (right). pkg:pypi/pyyaml@5.3.1 is shared by five installs, including the patched deb.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#52514e"/></marker></defs>
+<rect width="100%" height="100%" fill="#fcfcfb"/>
+<text x="24" y="40" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="start">Identity in Syft's SBOM (PURL)</text>
+<text x="610" y="40" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">Install</text>
+<text x="880" y="40" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="start">Code installed: yaml/constructor.py</text>
+<path d="M520,90 C472.0,90 472.0,90 424,90" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,90 C472.0,90 472.0,242 424,242" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M700,90 C788.0,90 788.0,218 876,218" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,150 C472.0,150 472.0,150 424,150" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,150 C472.0,150 472.0,242 424,242" fill="none" stroke="#d03b3b" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M700,150 C788.0,150 788.0,400 876,400" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,210 C472.0,210 472.0,242 424,242" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M700,210 C788.0,210 788.0,218 876,218" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,270 C472.0,270 472.0,242 424,242" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M700,270 C788.0,270 788.0,218 876,218" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,330 C472.0,330 472.0,242 424,242" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M700,330 C788.0,330 788.0,218 876,218" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,390 C472.0,390 472.0,390 424,390" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M700,390 C788.0,390 788.0,400 876,400" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M520,450 C472.0,450 472.0,450 424,450" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M700,450 C788.0,450 788.0,400 876,400" fill="none" stroke="#898781" stroke-width="1.6" stroke-linecap="round"/>
+<rect x="24" y="70" width="400" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="38" y="95" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:deb/ubuntu/python3-yaml@5.3.1-1</text>
+<rect x="24" y="130" width="400" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="38" y="155" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:deb/ubuntu/python3-yaml@5.3.1-1ubuntu0.1</text>
+<rect x="24" y="222" width="400" height="40" rx="8" fill="#ffffff" stroke="#d03b3b" stroke-width="2"/>
+<text x="38" y="247" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:pypi/pyyaml@5.3.1</text>
+<rect x="24" y="370" width="400" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="38" y="395" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:pypi/pyyaml@5.3.1%2Bacme1</text>
+<rect x="24" y="430" width="400" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="38" y="455" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:pypi/pyyaml@6.0.2</text>
+<text x="24" y="284" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#52514e" text-anchor="start">shared by 5 installs: 4 vulnerable, 1 patched</text>
+<rect x="520" y="70" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="96" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">deb-unpatched</text>
+<rect x="520" y="130" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="156" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">deb-patched</text>
+<rect x="520" y="190" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="216" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">pypi</text>
+<rect x="520" y="250" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="276" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">git</text>
+<rect x="520" y="310" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="336" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">local</text>
+<rect x="520" y="370" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="396" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">local-backport</text>
+<rect x="520" y="430" width="180" height="40" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="610" y="456" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="middle">pypi-fixed</text>
+<rect x="876" y="190" width="300" height="56" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<rect x="876" y="190" width="8" height="56" rx="3" fill="#d03b3b" stroke="none" stroke-width="1"/>
+<text x="898" y="214" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="600" fill="#0b0b0b" text-anchor="start">vulnerable · sha256 3b751a7f…</text>
+<text x="898" y="234" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="start">PoC returns (42,)</text>
+<rect x="876" y="372" width="300" height="56" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<rect x="876" y="372" width="8" height="56" rx="3" fill="#0ca30c" stroke="none" stroke-width="1"/>
+<text x="898" y="396" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="600" fill="#0b0b0b" text-anchor="start">patched · sha256 90d8247d…</text>
+<text x="898" y="416" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="start">PoC: ConstructorError</text>
+<text x="24" y="515" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#52514e" text-anchor="start">Red link: the patched deb's files also appear under the vulnerable release's PURL.</text>
+</svg>

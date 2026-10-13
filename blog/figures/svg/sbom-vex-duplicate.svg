@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" role="img">
+<title>One deb install becomes two SBOM components</title>
+<desc>dpkg installs python3-yaml 5.3.1-1ubuntu0.1, which contains the patched constructor.py and an egg-info saying Version 5.3.1. Syft reports a deb component and a PyPI component. With Syft JSON or SPDX the ownership relationship survives and Grype drops the PyPI entry; with CycloneDX it is lost and both scanners report a false positive.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#52514e"/></marker></defs>
+<rect width="100%" height="100%" fill="#fcfcfb"/>
+<rect x="24" y="60" width="330" height="250" rx="12" fill="#f4f3ef" stroke="#e1e0d9" stroke-width="1"/>
+<text x="44" y="90" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#898781" text-anchor="start">INSTALLED BY DPKG</text>
+<text x="44" y="116" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#0b0b0b" text-anchor="start">python3-yaml 5.3.1-1ubuntu0.1</text>
+<rect x="44" y="142" width="290" height="62" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="60" y="168" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13.5" font-weight="600" fill="#0b0b0b" text-anchor="start">yaml/constructor.py</text>
+<text x="60" y="189" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="start">patched (same bytes as 6.0.2)</text>
+<rect x="44" y="222" width="290" height="62" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="60" y="248" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13.5" font-weight="600" fill="#0b0b0b" text-anchor="start">PyYAML-5.3.1.egg-info</text>
+<text x="60" y="269" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="start">Version: 5.3.1 (upstream's)</text>
+<text x="450" y="50" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#0b0b0b" text-anchor="start">Syft catalogs two components</text>
+<rect x="430" y="72" width="360" height="66" rx="8" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="446" y="98" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="12.2" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:deb/ubuntu/python3-yaml@5.3.1-1ubuntu0.1</text>
+<text x="446" y="121" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="start">dpkg cataloger</text>
+<rect x="430" y="218" width="360" height="66" rx="8" fill="#ffffff" stroke="#d03b3b" stroke-width="2"/>
+<text x="446" y="244" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13.5" font-weight="400" fill="#0b0b0b" text-anchor="start">pkg:pypi/pyyaml@5.3.1</text>
+<text x="446" y="267" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="start">Python cataloger, from the egg-info</text>
+<path d="M354,105 L426,105" fill="none" stroke="#52514e" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M334,253 L426,251" fill="none" stroke="#52514e" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M610,138 L610,214" fill="none" stroke="#52514e" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="598" y="172" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13" font-weight="600" fill="#52514e" text-anchor="end">ownership-by-file-overlap</text>
+<text x="598" y="192" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#52514e" text-anchor="end">(the deb owns the PyPI entry)</text>
+<rect x="850" y="60" width="326" height="120" rx="10" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
+<text x="868" y="88" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="600" fill="#0b0b0b" text-anchor="start">Syft JSON or SPDX</text>
+<text x="868" y="112" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#52514e" text-anchor="start">relationship kept → Grype drops</text>
+<text x="868" y="132" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#52514e" text-anchor="start">the PyPI entry before matching</text>
+<rect x="868" y="144" width="34" height="26" rx="6" fill="#d8efd7" stroke="none" stroke-width="1"/>
+<text x="885.0" y="163.0" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#006300" text-anchor="middle">✓</text>
+<text x="912" y="162" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#0b0b0b" text-anchor="start">no finding</text>
+<rect x="850" y="200" width="326" height="140" rx="10" fill="#ffffff" stroke="#d03b3b" stroke-width="2"/>
+<text x="868" y="228" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="600" fill="#0b0b0b" text-anchor="start">CycloneDX</text>
+<text x="868" y="252" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#52514e" text-anchor="start">relationship dropped → the PyPI entry</text>
+<text x="868" y="272" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="400" fill="#52514e" text-anchor="start">looks like the PyPI release and matches</text>
+<text x="868" y="292" font-family="DejaVu Sans Mono, Noto Sans Mono, Menlo, monospace" font-size="13.5" font-weight="400" fill="#52514e" text-anchor="start">GHSA-8q59-q68h-6hv4 (&lt; 5.4)</text>
+<rect x="868" y="304" width="34" height="26" rx="6" fill="#d03b3b" stroke="none" stroke-width="1"/>
+<text x="885.0" y="322.0" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle">FP</text>
+<text x="912" y="322" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#0b0b0b" text-anchor="start">Grype and Trivy</text>
+<path d="M796,105 L812,105 L812,251 L796,251" fill="none" stroke="#c3c2b7" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M812,178 L846,122" fill="none" stroke="#52514e" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M812,178 L846,266" fill="none" stroke="#52514e" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="24" y="372" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#52514e" text-anchor="start">The supplier's VEX names the deb PURL, so it cannot reach the finding on pkg:pypi/pyyaml@5.3.1.</text>
+<text x="24" y="398" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#52514e" text-anchor="start">Trivy as a scanner does not use the relationship: it reports the false positive from Syft's SPDX too.</text>
+<text x="24" y="424" font-family="Noto Sans, DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#52514e" text-anchor="start">Trivy as an SBOM generator never lists the PyPI entry: it skips Python packages that dpkg owns.</text>
+</svg>
