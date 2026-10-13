@@ -10,6 +10,7 @@ Status, decisions and next steps for whoever continues this experiment. Read [RE
   - Ground truth was re-checked against PyPI's and Ubuntu's own packages.
   - New probes (`run.py probe`, RESULTS.md §4) corrected four explanations: the deb-patched FP depends on CycloneDX (§4.1); Grype also reads `syft:metadata:source` (§4.2); Syft keeps the local-install origin (§4.3); `vexctl filter` ignores products by construction (§4.4).
   - `out/probe/` was regenerated on 2026-10-13; DB dates are in `out/versions.txt`.
+  - Probe §4.6 asks whether a `requirements.txt` next to `app.py` matters: not for SBOMs made from the image, but SBOMs made from the source directory see only the manifest.
 - The supplier VEX uses the **package as the product**. An image-scoped VEX (image = product, package = subcomponent, as CISA frames it) is **not tested yet**, because neither SBOM gives the image root a PURL when scanning a local image archive (#2).
 
 ## Decisions taken (and why)

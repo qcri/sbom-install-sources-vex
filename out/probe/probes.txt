@@ -52,3 +52,45 @@ VEX d-ghsa-only on local-backport Syft SBOM                           : grype []
 VEX e-extra-qualifier on local-backport Syft SBOM                     : grype ['pkg:pypi/pyyaml@5.3.1%2Bacme1'], trivy ['pkg:pypi/pyyaml@5.3.1%2Bacme1']
 VEX f-deb-purl-as-trivy-writes-it on deb-unpatched                    : syft→grype ['pkg:pypi/pyyaml@5.3.1'], trivy→trivy []
 VEX g-deb-purl-as-syft-writes-it on deb-unpatched                     : syft→grype ['pkg:pypi/pyyaml@5.3.1'], trivy→trivy ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+
+## 4.6 Manifests: does a requirements.txt next to app.py change anything?
+pypi: requirements.txt = PyYAML==5.3.1
+pypi: image SBOMs (Syft, Trivy) unchanged by it                       : True
+pypi: Syft image + requirements cataloger: PyYAML PURLs               : ['pkg:pypi/pyyaml@5.3.1', 'pkg:pypi/pyyaml@5.3.1']
+pypi: Syft image + requirements cataloger: left after --vex           : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+pypi: Syft, source directory: PyYAML PURLs                            : ['pkg:pypi/pyyaml@5.3.1']
+pypi: Syft, source directory: left after --vex                        : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+pypi: Trivy, source directory: PyYAML PURLs                           : ['pkg:pypi/pyyaml@5.3.1']
+pypi: Trivy, source directory: left after --vex                       : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+pypi-fixed: requirements.txt = PyYAML==5.3.1
+pypi-fixed: image SBOMs (Syft, Trivy) unchanged by it                 : True
+pypi-fixed: Syft image + requirements cataloger: PyYAML PURLs         : ['pkg:pypi/pyyaml@5.3.1', 'pkg:pypi/pyyaml@6.0.2']
+pypi-fixed: Syft image + requirements cataloger: left after --vex     : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+pypi-fixed: Syft, source directory: PyYAML PURLs                      : ['pkg:pypi/pyyaml@5.3.1']
+pypi-fixed: Syft, source directory: left after --vex                  : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+pypi-fixed: Trivy, source directory: PyYAML PURLs                     : ['pkg:pypi/pyyaml@5.3.1']
+pypi-fixed: Trivy, source directory: left after --vex                 : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: requirements.txt = PyYAML==5.3.1
+deb-patched: image SBOMs (Syft, Trivy) unchanged by it                : True
+deb-patched: Syft image + requirements cataloger: PyYAML PURLs        : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1ubuntu0.1', 'pkg:pypi/pyyaml@5.3.1', 'pkg:pypi/pyyaml@5.3.1']
+deb-patched: Syft image + requirements cataloger: left after --vex    : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: Syft, source directory: PyYAML PURLs                     : ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: Syft, source directory: left after --vex                 : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: Trivy, source directory: PyYAML PURLs                    : ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: Trivy, source directory: left after --vex                : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+git: requirements.txt = PyYAML @ git+https://github.com/yaml/pyyaml.git@5.3.1
+git: image SBOMs (Syft, Trivy) unchanged by it                        : True
+git: Syft image + requirements cataloger: PyYAML PURLs                : ['pkg:pypi/pyyaml@5.3.1']
+git: Syft image + requirements cataloger: left after --vex            : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+git: Syft, source directory: PyYAML PURLs                             : []
+git: Syft, source directory: left after --vex                         : grype [], trivy []
+git: Trivy, source directory: PyYAML PURLs                            : []
+git: Trivy, source directory: left after --vex                        : grype [], trivy []
+local-backport: requirements.txt = PyYAML==5.3.1
+local-backport: image SBOMs (Syft, Trivy) unchanged by it             : True
+local-backport: Syft image + requirements cataloger: PyYAML PURLs     : ['pkg:pypi/pyyaml@5.3.1', 'pkg:pypi/pyyaml@5.3.1%2Bacme1']
+local-backport: Syft image + requirements cataloger: left after --vex : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+local-backport: Syft, source directory: PyYAML PURLs                  : ['pkg:pypi/pyyaml@5.3.1']
+local-backport: Syft, source directory: left after --vex              : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+local-backport: Trivy, source directory: PyYAML PURLs                 : ['pkg:pypi/pyyaml@5.3.1']
+local-backport: Trivy, source directory: left after --vex             : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
