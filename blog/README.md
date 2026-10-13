@@ -37,7 +37,6 @@ Checked on 2026-10-13 by adding the post to a clone of the site and building it 
 
 ## Before publishing
 
-- **Repository link.** Replace `REPO_URL` in "Reproduce it". This repository is private, so link it only if it becomes public; otherwise describe how to get access.
-- **Credits.** Decide how to credit the experiment's authors.
+- **Repository visibility.** The post links https://github.com/JK-code505/sbom-install-sources-vex (in "Reproduce it" and "Credits"). Make the repository public before publishing, or readers will get a 404.
 - **Date.** Check the date in the file name and the front matter.
 - **Dependency on PR #6.** Findings 1–5 follow the corrected results in PR #6. If that PR changes, update the post to match.

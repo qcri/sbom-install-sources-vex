@@ -5,6 +5,7 @@ date: 2026-10-13
 description: One vulnerable library installed seven ways, two SBOM generators, two scanners and a correct VEX statement. Where software identity breaks, why, and how one tool's choices change another tool's answer.
 tags: [SBOM, VEX, syft, grype, trivy, supply-chain-security]
 categories: security
+author: Jwed Khelif and Mohannad Alhanahnah
 related_posts: false
 toc:
   beginning: true
@@ -327,7 +328,7 @@ Two interaction patterns stand out.
 
 ## Reproduce it
 
-The experiment is a single Python script driving pinned container images (repository: REPO_URL). On a Linux host with podman:
+Everything is in [JK-code505/sbom-install-sources-vex](https://github.com/JK-code505/sbom-install-sources-vex): a single Python script that drives pinned container images, plus the committed SBOMs, VEX documents, probes and the raw scanner output of the reported run. On a Linux host with podman:
 
 ```bash
 python3 -I run.py          # all stages, from fetch to probe
@@ -338,6 +339,10 @@ The first run downloads about 5 GB of vulnerability databases and builds seven i
 ```bash
 tar -xJf out/scans-2026-10-08.tar.xz && python3 -I run.py report
 ```
+
+## Credits
+
+This experiment was led by **Jwed Khelif**, who deserves most of the credit for it, together with Mohannad Alhanahnah. The code and data are in [JK-code505/sbom-install-sources-vex](https://github.com/JK-code505/sbom-install-sources-vex).
 
 ## References
 
