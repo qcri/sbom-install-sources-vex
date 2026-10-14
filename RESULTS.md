@@ -52,7 +52,7 @@ Every step runs a pinned container image (digests in `run.py` and `out/versions.
 
 Trivy appears twice because it plays two roles: `trivy image` generates SBOMs, `trivy sbom` scans them.
 
-**SBOMs from the image.** `build` saves each built image as a file (`podman save --format docker-archive`), and both generators read that file: no registry, no running container. They unpack the image layers and list what is *installed*, from the package records inside the filesystem: dpkg's database (`/var/lib/dpkg/status`) for debs, and Python's installed-package metadata (`*.dist-info`, `*.egg-info`) for Python packages. They do not read the source code, the Containerfile, or dependency manifests such as `requirements.txt`: Syft's manifest cataloger (`python-package-cataloger`) is not among its image catalogers (`syft cataloger list`), and Trivy reads manifests only in `trivy fs` and `trivy repo` mode. §4.6 checks what changes when a `requirements.txt` is present, and when the SBOM is made from the source directory instead.
+**SBOMs from the image.** `build` saves each built image as a file (`podman save --format docker-archive`), and both generators read that file: no registry, no running container. They unpack the image layers and list what is *installed*, from the package records inside the filesystem: dpkg's database (`/var/lib/dpkg/status`) for debs, and Python's installed-package metadata (`*.dist-info`, `*.egg-info`) for Python packages. They do not read the source code, the Containerfile, or dependency manifests such as `requirements.txt`: Syft's manifest cataloger (`python-package-cataloger`) is not among its image catalogers (`syft cataloger list`), and Trivy reads manifests only in `trivy fs` and `trivy repo` mode.
 
 **Two ways to apply VEX.**
 - *In the scanner:* with `--vex`, Grype and Trivy load the VEX document and suppress each finding that an applicable `fixed` or `not_affected` statement covers, before they write the report (§4.4, §4.5).
@@ -220,30 +220,6 @@ Two more probes on PURL qualifiers:
 1. **Vulnerability ID.** The statement's name or one of its aliases must equal the ID the scanner gives the finding. Grype uses the GHSA ID for PyPI findings (and the CVE for Ubuntu findings); Trivy uses the CVE. Neither uses its own CVE↔GHSA link, so a statement needs both IDs to be applied by both scanners.
 2. **Product.** PURL type, namespace and name must be equal. If the statement has a version, it must be equal, with no ranges (`5.3.1` does not match `5.3.1+acme1`); without a version it matches every version. Every qualifier in the statement must be on the component with the same value; qualifiers that only the component has are ignored.
 3. **Reach.** A statement whose product is a package applies to that package in every SBOM it is applied to. local-backport's statement stays in its image only because the rebuild has its own version, `+acme1`. A backport that kept `5.3.1` could only be covered by a statement that also covers upstream 5.3.1, as (b) shows.
-
-### 4.6 Manifests: a `requirements.txt` next to `app.py`
-
-**Question.** Many projects ship a dependency manifest with their code. Would a `requirements.txt` in the image change the SBOMs or the verdicts? And what if the SBOM is made from the source directory instead, as CI pipelines often do before an image exists?
-
-**Design.** The probe adds `/app/requirements.txt` to five images, each with a realistic content, and makes SBOMs three ways:
-1. from the image, as in §3;
-2. from the image with Syft's manifest cataloger switched on (`--select-catalogers +python-package-cataloger`);
-3. from the source directory (`app.py` and `requirements.txt`) with `syft dir:` and `trivy fs`.
-
-Each SBOM is scanned with the variant's supplier VEX applied (`--vex`). The verdicts were the same for Grype and Trivy.
-
-| install (truth) | `requirements.txt` | 1. from the image | 2. image + Syft's manifest cataloger | 3. from the source directory |
-|---|---|---|---|---|
-| pypi (vulnerable) | `PyYAML==5.3.1` | unchanged | second `pyyaml@5.3.1` entry; ✅ | `pyyaml@5.3.1`; ✅ |
-| pypi-fixed (not) | `PyYAML==5.3.1`, stale: 6.0.2 is installed | unchanged | extra `pyyaml@5.3.1`: **FP** | `pyyaml@5.3.1`: **FP** |
-| deb-patched (not) | `PyYAML==5.3.1`, though apt provides it | unchanged | a third PyYAML entry: FP | only `pyyaml@5.3.1`, the deb is invisible: **FP**, now with Trivy too |
-| git (vulnerable) | `PyYAML @ git+https://github.com/yaml/pyyaml.git@5.3.1` | unchanged | the line is not read; ✅ | **nothing**: both generators drop the git reference: **FN** |
-| local-backport (not) | `PyYAML==5.3.1`, the public version over the patched build | unchanged | extra `pyyaml@5.3.1`: **FP**, which the statement for `5.3.1+acme1` does not reach | `pyyaml@5.3.1`: **FP**, same |
-
-What it shows:
-- **SBOMs from the image ignore the manifest.** With the defaults used in §3, the generators list what is installed, and adding `requirements.txt` changes no SBOM and no verdict.
-- **An SBOM from the source sees only the manifest.** It inherits the manifest's errors (a stale pin becomes an FP), cannot see packages that come from elsewhere (apt) or that its parser cannot read (a git reference becomes an FN), and names a version that the supplier's VEX for the installed build does not match.
-- **Mixing both views duplicates the package.** With Syft's manifest cataloger on, the declared version sits next to the installed one as a separate component, and the scanners report on both.
 
 ## 5. Mapping to CISA (findings in §4)
 

@@ -49,7 +49,6 @@ SUPPLIER ("Example PSIRT")                      CONSUMER
    - Qualifiers in the statement's PURL must be on the component: a deb PURL copied from a Syft SBOM (`…&upstream=pyyaml`) is not applied to a Trivy SBOM.
 5. **`vexctl filter` on SARIF ignores the product.** It removes every finding whose ID has a `fixed` or `not_affected` statement: a statement about an unrelated npm package removed a real PyYAML finding.
 6. **Ubuntu's patched `constructor.py` is byte-for-byte identical to PyYAML 6.0.2's**, yet its Python metadata still says `5.3.1`.
-7. **An SBOM made from the source sees the manifest, not the install.** A `requirements.txt` next to `app.py` changes nothing in SBOMs made from the image. Made from the source directory instead, the SBOM lists only the pinned version: a stale pin or a patched build becomes a false positive that the supplier's VEX cannot reach, and a git requirement disappears (false negative).
 
 Against the oracle, 7 of the 28 SBOM→scanner results are wrong without VEX, 3 with `--vex`, and 4 with `vexctl filter`. The 3 left after `--vex` are all deb cases (results 1–2).
 
