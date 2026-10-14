@@ -4,6 +4,7 @@ import yaml
 
 
 def handle_upload(body):
+    """Parse a YAML document sent by a client."""
     return yaml.full_load(body)      # client data -> FullLoader (CVE-2020-14343 sink)
 
 

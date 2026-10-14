@@ -1,0 +1,21 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://example.com/vex/probe/d-ghsa-only",
+  "author": "Example PSIRT",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "GHSA-8q59-q68h-6hv4"
+      },
+      "products": [
+        {
+          "@id": "pkg:pypi/pyyaml@5.3.1%2Bacme1"
+        }
+      ],
+      "status": "fixed",
+      "timestamp": "2026-10-08T12:00:00Z"
+    }
+  ],
+  "timestamp": "2026-10-08T12:00:00Z"
+}

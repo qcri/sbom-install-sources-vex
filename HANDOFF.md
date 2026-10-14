@@ -2,40 +2,53 @@
 
 Status, decisions and next steps for whoever continues this experiment. Read [README.md](README.md) first, then [RESULTS.md](RESULTS.md).
 
-## Status (last run 2026-10-08)
+## Status
 
-- Done: 7 variants × 2 SBOM tools × 2 scanners, each without VEX, with `--vex`, and with a `vexctl filter` post-filter. Root causes are confirmed by probes (`run.py probe`).
-- The supplier VEX uses the **package as the product**. An image-scoped VEX (image = product, package = subcomponent, as CISA frames it) is **not tested yet**, because neither SBOM gives the image root a PURL when scanning a local image archive.
-- The committed `out/` is a snapshot of that run. The raw scans are in `out/scans-2026-10-08.tar.xz`; `out/*/scan/` is git-ignored.
+- **Run of 2026-10-08:** 7 variants × 2 SBOM generators × 2 scanners, each without VEX, with `--vex`, and with a `vexctl filter` post-filter. The committed `out/` is a snapshot of that run. The raw scans are in `out/scans-2026-10-08.tar.xz`; `out/*/scan/` is git-ignored.
+- **Review of 2026-10-13:**
+  - Re-scanning every committed SBOM with the pinned tools and newer DBs (2026-10-12/13) gave the same 32 results.
+  - Ground truth was re-checked against PyPI's and Ubuntu's own packages.
+  - New probes (`run.py probe`, RESULTS.md §4) corrected four explanations: the deb-patched FP depends on CycloneDX (§4.1); Grype also reads `syft:metadata:source` (§4.2); Syft keeps the local-install origin (§4.3); `vexctl filter` ignores products by construction (§4.4).
+  - `out/probe/` was regenerated on 2026-10-13; DB dates are in `out/versions.txt`.
+- The supplier VEX uses the **package as the product**. An image-scoped VEX (image = product, package = subcomponent, as CISA frames it) is **not tested yet**, because neither SBOM gives the image root a PURL when scanning a local image archive (#2).
 
 ## Decisions taken (and why)
 
-- **One base image for all variants (`ubuntu:20.04`, Python 3.8).** Ubuntu 20.04 is the only release that ships both the unpatched (`5.3.1-1`) and patched (`5.3.1-1ubuntu0.1`) `python3-yaml`. Keeping every variant on it leaves the install method as the only difference. PyYAML 5.3.1 also builds and is exploitable on Python 3.10–3.13 (tested), if a newer base is ever needed for the pip variants.
+- **One base image for all variants (`ubuntu:20.04`, Python 3.8).** Ubuntu 20.04 is the only release that ships both the unpatched (`5.3.1-1`) and patched (`5.3.1-1ubuntu0.1`) `python3-yaml`. Keeping every variant on it leaves the install method as the only difference that matters for this CVE (the libyaml C extension also differs; it is not involved). PyYAML 5.3.1 also builds and is exploitable on Python 3.10–3.13 (tested), if a newer base is ever needed for the pip variants.
 - **The oracle decides truth, never a scanner.** The VEX status is derived from it, so every VEX statement is correct by construction. The experiment then measures only whether the statement is *applied*.
-- **local-backport uses Ubuntu's own patch.** The result is code byte-identical to the patched deb and to 6.0.2, which isolates packaging and identity as the only variables.
+- **local-backport uses Ubuntu's own patch.** The result is a `constructor.py` byte-identical to the patched deb's and to 6.0.2's, which isolates packaging and identity as the only variables.
 - **`fixed` vs `not_affected/vulnerable_code_not_present` for the backport.** Both were issued, and scanners treat them identically. The evidence (a patch, identical to the fixed release) fits CISA's `fixed` better.
-- **Pinned tools.** Syft is pinned by digest, Grype and Trivy by tag. Vulnerability DBs are frozen after the first update: `GRYPE_DB_AUTO_UPDATE=false`, `--skip-db-update`. Their dates are in `out/versions.txt`.
+- **Pinned tools.** Syft, Grype, Trivy and the `ubuntu:20.04` base image are pinned by digest (Grype and Trivy since 2026-10-13; those digests reproduce the reported results). The vulnerability DBs are downloaded on first use (`dbs()` in `run.py`) and then frozen: `GRYPE_DB_AUTO_UPDATE=false` and `GRYPE_DB_VALIDATE_AGE=false` for Grype, `--skip-db-update` for Trivy. Their dates are in `out/versions.txt`.
 
-## Next steps (suggested order)
+## Next steps
 
-1. **Image-scoped VEX.** Push the images to a local registry (`registry:2`) so the SBOM roots get `pkg:oci/…@sha256` PURLs. Then reissue the VEX as product = image, subcomponent = package, and check:
-   - does it stop the leakage in results 4 and 5?
+Open issues, roughly in order:
+
+1. **SBOM format as a factor** (#1). Add Syft JSON, SPDX and a direct image scan to the matrix. The §4.1 probe shows that the format changes the deb-patched verdict for Grype.
+2. **Is VEX leakage fundamental?** (#2). Add a backport that keeps version `5.3.1`, push the images to a local registry (`registry:2`) so the SBOM roots get `pkg:oci/…@sha256` PURLs, then reissue the VEX as product = image, subcomponent = package. Check:
+   - does it stop the leakage in RESULTS.md §4.5?
    - do Grype and Trivy both honour it on SBOM input?
-2. **More consumers and VEX formats.**
+3. **Docker support and script-generated provenance** (#3).
+4. **Report errors by mechanism** (#4), not only as a count out of 28.
+5. **Upstream reports** (#5): Syft (CycloneDX drops the ownership relationship), vexctl (product-blind filter, GHSA rule IDs).
+6. **More consumers and VEX formats.**
    - cve-bin-tool (reads OpenVEX, CSAF and CycloneDX VEX);
    - OWASP Dependency-Track (CycloneDX VEX);
    - Trivy with CSAF and CycloneDX VEX: does the format change what gets applied?
-3. **Distro-published VEX.** Canonical's OpenVEX feed (`security-metadata.canonical.com/vex/`) returned 503 on 2026-10-08. If it's available, compare its `python3-yaml` statement with ours.
-4. **Runtime SBOM.** A memory-based tool (MEM-SBOM, Volatility 3) records the *import* name `yaml`. Test whether `pkg:pypi/yaml@5.3.1` matches any advisory; an earlier, unverified observation says it doesn't.
-5. **Generalise.** Repeat with a second ecosystem (npm or Go) and a second CVE, to see which findings are PyYAML-specific.
+7. **Distro-published VEX.** Canonical's OpenVEX feed (`security-metadata.canonical.com/vex/`) returned 503 on 2026-10-08. If it's available, compare its `python3-yaml` statement with ours.
+8. **Runtime SBOM.** A memory-based tool (MEM-SBOM, Volatility 3) records the *import* name `yaml`. Test whether `pkg:pypi/yaml@5.3.1` matches any advisory; an earlier, unverified observation says it doesn't.
+9. **Generalise.** Repeat with a second ecosystem (npm or Go) and a second CVE, to see which findings are PyYAML-specific.
 
 ## Gotchas
 
 - **Don't run podman containers in parallel on the same `:Z` volume.** SELinux relabelling races, and Trivy fails with `mkdir /root/.cache/trivy/fanal: permission denied`. `run.py` runs them in sequence.
+- **The first `sbom`, `scan` or `probe` downloads the vulnerability DBs** into `.cache/` (about 5 GB). Delete `.cache/grype` or `.cache/trivy` to get a newer DB; `run.py` never updates them otherwise.
+- **Grype refuses a DB older than 5 days by default** (`validate-age: true`, `max-allowed-built-age: 120h`), so a frozen DB would stop `scan` and `probe` after 5 days. `run.py` sets `GRYPE_DB_VALIDATE_AGE=false` to keep using it.
+- **`run.py` stops on the first failing container** and prints its stderr. It used to carry on and leave missing or partial outputs.
 - **Old pip doesn't record the install origin.** Ubuntu 20.04's pip 20.0.2 predates `direct_url.json`, so the venvs upgrade pip to 25.0.1, the last version for Python 3.8. Without that, git and local installs leave no trace of where they came from.
-- **Ubuntu 20.04 is in ESM.** Grype logs `using channel "esm"`. The release-pocket package (`5.3.1-1`) is still installable by pinning its version.
+- **Ubuntu 20.04 is in ESM.** Grype logs `using channel "esm"`, and Trivy warns that the OS version is no longer supported. The release-pocket package (`5.3.1-1`) is still installable by pinning its version.
 - **Expected `dpkg --verify` warning.** It flags `/usr/share/doc/python3-yaml/README`, because the minimal image strips docs. The code files verify.
-- **Image tars are about 1 GB** (`out/images/`, git-ignored). `run.py build` recreates them.
+- **Image tars are about 1 GB** (`out/images/`, git-ignored). `run.py build` recreates them; `probe` needs the two deb images.
 
 ## Sources
 

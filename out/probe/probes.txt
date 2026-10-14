@@ -1,13 +1,54 @@
-grype, Trivy SBOM as-is                     : []
-grype, Trivy SBOM + purl upstream=pyyaml    : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
-trivy, Syft SBOM as-is                      : ['pkg:pypi/pyyaml@5.3.1']
-trivy, Syft SBOM + trivy:SrcName=pyyaml     : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
-pypi image + deb-patched VEX, grype --vex   : ['pkg:pypi/pyyaml@5.3.1']
-pypi image + deb-patched VEX, trivy --vex   : ['pkg:pypi/pyyaml@5.3.1']
-pypi image + deb-patched VEX, vexctl filter : []  (trivy SARIF)
-VEX a-no-alias     on local-backport SBOM: grype left 1, trivy left 0
-VEX a-no-alias     on pypi           SBOM: grype left 1, trivy left 1
-VEX b-plain-5.3.1  on local-backport SBOM: grype left 1, trivy left 1
-VEX b-plain-5.3.1  on pypi           SBOM: grype left 0, trivy left 0
-VEX c-no-version   on local-backport SBOM: grype left 0, trivy left 0
-VEX c-no-version   on pypi           SBOM: grype left 0, trivy left 0
+# Each line lists the PURLs (qualifiers dropped) that still carry CVE-2020-14343 / GHSA-8q59-q68h-6hv4.
+# [] = nothing reported. VEX lines: [] = suppressed (or removed, for vexctl filter).
+
+## 4.1 One deb install, two components: does the PyPI duplicate survive outside CycloneDX?
+deb-unpatched: Syft JSON relationship python3-yaml -> pyyaml          : ['ownership-by-file-overlap']
+deb-unpatched: Syft SPDX relationship python3-yaml -> pyyaml          : ['OTHER (ownership-by-file-overlap)']
+deb-unpatched: grype, image scanned directly                          : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+deb-unpatched: grype, Syft JSON SBOM                                  : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+deb-unpatched: grype, Syft SPDX SBOM                                  : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+deb-unpatched: grype, Syft CycloneDX SBOM                             : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+deb-unpatched: trivy, Syft SPDX SBOM                                  : ['pkg:pypi/pyyaml@5.3.1']
+deb-unpatched: trivy, Syft CycloneDX SBOM                             : ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: Syft JSON relationship python3-yaml -> pyyaml            : ['ownership-by-file-overlap']
+deb-patched: Syft SPDX relationship python3-yaml -> pyyaml            : ['OTHER (ownership-by-file-overlap)']
+deb-patched: grype, image scanned directly                            : []
+deb-patched: grype, Syft JSON SBOM                                    : []
+deb-patched: grype, Syft SPDX SBOM                                    : []
+deb-patched: grype, Syft CycloneDX SBOM                               : ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: trivy, Syft SPDX SBOM                                    : ['pkg:pypi/pyyaml@5.3.1']
+deb-patched: trivy, Syft CycloneDX SBOM                               : ['pkg:pypi/pyyaml@5.3.1']
+
+## 4.2 Deb source package: which field does each scanner read? (deb-unpatched, vulnerable)
+grype, Trivy SBOM as-is                                               : []
+grype, Trivy SBOM + purl qualifier upstream=pyyaml                    : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+grype, Trivy SBOM + Syft properties metadataType, metadata:source     : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
+grype, Trivy SPDX SBOM (source package only in sourceInfo text)       : []
+grype, Syft SBOM as-is                                                : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+grype, Syft SBOM minus purl qualifier upstream (property kept)        : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+grype, Syft SBOM minus property syft:metadata:source (qualifier kept) : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+grype, Syft SBOM minus both                                           : ['pkg:pypi/pyyaml@5.3.1']
+trivy, Syft SBOM as-is                                                : ['pkg:pypi/pyyaml@5.3.1']
+trivy, Syft SBOM + property aquasecurity:trivy:SrcName=pyyaml         : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+trivy, Syft SBOM + SrcName=pyyaml, SrcVersion=5.3.1, SrcRelease=1     : ['pkg:deb/ubuntu/python3-yaml@5.3.1-1', 'pkg:pypi/pyyaml@5.3.1']
+
+## 4.4 Applying a statement to another image: the patched deb's `fixed` statement on the vulnerable pypi image
+pypi Syft SBOM, grype --vex                                           : ['pkg:pypi/pyyaml@5.3.1']
+pypi Syft SBOM, trivy --vex                                           : ['pkg:pypi/pyyaml@5.3.1']
+pypi Trivy SARIF, vexctl filter                                       : []
+unrelated pkg:npm/left-pad statement, pypi Syft SBOM, grype --vex     : ['pkg:pypi/pyyaml@5.3.1']
+unrelated pkg:npm/left-pad statement, pypi Syft SBOM, trivy --vex     : ['pkg:pypi/pyyaml@5.3.1']
+unrelated pkg:npm/left-pad statement, pypi Trivy SARIF, vexctl filter : []
+
+## 4.5 How --vex matches: one field of the local-backport `fixed` statement changed
+VEX a-no-alias on local-backport Syft SBOM                            : grype ['pkg:pypi/pyyaml@5.3.1%2Bacme1'], trivy []
+VEX a-no-alias on pypi Syft SBOM                                      : grype ['pkg:pypi/pyyaml@5.3.1'], trivy ['pkg:pypi/pyyaml@5.3.1']
+VEX b-plain-5.3.1 on local-backport Syft SBOM                         : grype ['pkg:pypi/pyyaml@5.3.1%2Bacme1'], trivy ['pkg:pypi/pyyaml@5.3.1%2Bacme1']
+VEX b-plain-5.3.1 on pypi Syft SBOM                                   : grype [], trivy []
+VEX b-plain-5.3.1 on git Syft SBOM                                    : grype [], trivy []
+VEX c-no-version on local-backport Syft SBOM                          : grype [], trivy []
+VEX c-no-version on pypi Syft SBOM                                    : grype [], trivy []
+VEX d-ghsa-only on local-backport Syft SBOM                           : grype [], trivy ['pkg:pypi/pyyaml@5.3.1%2Bacme1']
+VEX e-extra-qualifier on local-backport Syft SBOM                     : grype ['pkg:pypi/pyyaml@5.3.1%2Bacme1'], trivy ['pkg:pypi/pyyaml@5.3.1%2Bacme1']
+VEX f-deb-purl-as-trivy-writes-it on deb-unpatched                    : syft→grype ['pkg:pypi/pyyaml@5.3.1'], trivy→trivy []
+VEX g-deb-purl-as-syft-writes-it on deb-unpatched                     : syft→grype ['pkg:pypi/pyyaml@5.3.1'], trivy→trivy ['pkg:deb/ubuntu/python3-yaml@5.3.1-1']
