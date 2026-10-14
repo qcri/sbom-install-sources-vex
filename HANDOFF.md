@@ -18,7 +18,7 @@ Status, decisions and next steps for whoever continues this experiment. Read [RE
 - **The oracle decides truth, never a scanner.** The VEX status is derived from it, so every VEX statement is correct by construction. The experiment then measures only whether the statement is *applied*.
 - **local-backport uses Ubuntu's own patch.** The result is a `constructor.py` byte-identical to the patched deb's and to 6.0.2's, which isolates packaging and identity as the only variables.
 - **`fixed` vs `not_affected/vulnerable_code_not_present` for the backport.** Both were issued, and scanners treat them identically. The evidence (a patch, identical to the fixed release) fits CISA's `fixed` better.
-- **Pinned tools.** Syft, Grype, Trivy and the `ubuntu:20.04` base image are pinned by digest (Grype and Trivy since 2026-10-13; those digests reproduce the reported results). The vulnerability DBs are downloaded on first use (`dbs()` in `run.py`) and then frozen: `GRYPE_DB_AUTO_UPDATE=false`, `--skip-db-update`. Their dates are in `out/versions.txt`.
+- **Pinned tools.** Syft, Grype, Trivy and the `ubuntu:20.04` base image are pinned by digest (Grype and Trivy since 2026-10-13; those digests reproduce the reported results). The vulnerability DBs are downloaded on first use (`dbs()` in `run.py`) and then frozen: `GRYPE_DB_AUTO_UPDATE=false` and `GRYPE_DB_VALIDATE_AGE=false` for Grype, `--skip-db-update` for Trivy. Their dates are in `out/versions.txt`.
 
 ## Next steps
 
@@ -43,6 +43,7 @@ Open issues, roughly in order:
 
 - **Don't run podman containers in parallel on the same `:Z` volume.** SELinux relabelling races, and Trivy fails with `mkdir /root/.cache/trivy/fanal: permission denied`. `run.py` runs them in sequence.
 - **The first `sbom`, `scan` or `probe` downloads the vulnerability DBs** into `.cache/` (about 5 GB). Delete `.cache/grype` or `.cache/trivy` to get a newer DB; `run.py` never updates them otherwise.
+- **Grype refuses a DB older than 5 days by default** (`validate-age: true`, `max-allowed-built-age: 120h`), so a frozen DB would stop `scan` and `probe` after 5 days. `run.py` sets `GRYPE_DB_VALIDATE_AGE=false` to keep using it.
 - **`run.py` stops on the first failing container** and prints its stderr. It used to carry on and leave missing or partial outputs.
 - **Old pip doesn't record the install origin.** Ubuntu 20.04's pip 20.0.2 predates `direct_url.json`, so the venvs upgrade pip to 25.0.1, the last version for Python 3.8. Without that, git and local installs leave no trace of where they came from.
 - **Ubuntu 20.04 is in ESM.** Grype logs `using channel "esm"`, and Trivy warns that the OS version is no longer supported. The release-pocket package (`5.3.1-1`) is still installable by pinning its version.

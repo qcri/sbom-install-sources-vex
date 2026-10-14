@@ -19,7 +19,9 @@ TARGET = {CVE, GHSA}
 SYFT = "docker.io/anchore/syft@sha256:507b76f097cd0f4a0f998a346afe61f5776329913d6ab3c0bd678b6635356120"  # 1.54.1
 GRYPE = "docker.io/anchore/grype@sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"  # v0.120.1
 TRIVY = "docker.io/aquasec/trivy@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa"  # 0.75.0
-G_MOUNT, G_ENV = [f"{CACHE}/grype:/cache:Z"], ["GRYPE_DB_CACHE_DIR=/cache", "GRYPE_DB_AUTO_UPDATE=false"]
+G_MOUNT = [f"{CACHE}/grype:/cache:Z"]
+G_ENV = ["GRYPE_DB_CACHE_DIR=/cache", "GRYPE_DB_AUTO_UPDATE=false",
+         "GRYPE_DB_VALIDATE_AGE=false"]   # keep using the frozen DB after Grype's 5-day age limit
 T_MOUNT = [f"{CACHE}/trivy:/root/.cache/trivy:Z"]
 
 # variant -> PURL the supplier knows it shipped (from its own build: dpkg version or wheel METADATA)
@@ -50,7 +52,7 @@ def sh(*cmd, check=True, **kw):
 
 def pod(image, *args, mounts=(), env=()):
     """Run a tool container with out/ mounted at /out (plus extra mounts and env vars)."""
-    vols =["-v", f"{OUT}:/out:Z", *[a for m in mounts for a in ("-v", m)]]
+    vols = ["-v", f"{OUT}:/out:Z", *[a for m in mounts for a in ("-v", m)]]
     envs = [f"--env={e}" for e in env]
     return sh("podman", "run", "--rm", *vols, *envs, image, *args)
 
@@ -116,7 +118,7 @@ def evidence():
 
 def oracle(v):
     """Ground truth for variant v: the oracle's JSON block from its evidence.txt."""
-    text =(OUT / v / "evidence.txt").read_text()
+    text = (OUT / v / "evidence.txt").read_text()
     return json.loads(text.split("### ground truth (oracle)\n", 1)[1])
 
 
@@ -193,7 +195,7 @@ def scan():
 # ---------------------------------------------------------------- report
 def grype_hits(p):
     """CVE-2020-14343 findings in a Grype JSON report: (reported, suppressed by VEX)."""
-    j =json.loads(p.read_text())
+    j = json.loads(p.read_text())
     ids = lambda m: {m["vulnerability"]["id"], *[r["id"] for r in m.get("relatedVulnerabilities", [])]}
     hits = [(m["vulnerability"]["id"], m["artifact"]["purl"]) for m in j["matches"] if ids(m) & TARGET]
     sup = [(m["vulnerability"]["id"], m["artifact"]["purl"],
@@ -204,7 +206,7 @@ def grype_hits(p):
 
 def trivy_hits(p):
     """CVE-2020-14343 findings in a Trivy JSON report: (reported, suppressed by VEX)."""
-    j =json.loads(p.read_text())
+    j = json.loads(p.read_text())
     hits, sup = [], []
     for r in j.get("Results", []):
         for x in r.get("Vulnerabilities", []):
@@ -329,7 +331,7 @@ def probe():
 
     def statement(name, product, vuln=CVE, aliases=(GHSA,)):
         """Write a one-statement `fixed` VEX document to probe/vexmatch/ and return the --vex arguments."""
-        alias =["--aliases", ",".join(aliases)] if aliases else []
+        alias = ["--aliases", ",".join(aliases)] if aliases else []
         sh(str(VEXCTL), "create", "--author", "Example PSIRT", "--id", f"https://example.com/vex/probe/{name}",
            "--product", product, "--vuln", vuln, *alias, "--status", "fixed",
            "--file", str(vm / f"{name}.openvex.json"), env={**os.environ, "SOURCE_DATE_EPOCH": TS})
@@ -337,7 +339,7 @@ def probe():
 
     def vexctl_left(vex, keep):
         """vexctl-filter the pypi image's Trivy SARIF with a VEX document; keep the output, return what is left."""
-        r =sh(str(VEXCTL), "filter", str(OUT / "pypi/scan/trivy.syft.none.sarif"), str(vex))
+        r = sh(str(VEXCTL), "filter", str(OUT / "pypi/scan/trivy.syft.none.sarif"), str(vex))
         (p / keep).write_text(r.stdout)
         return sorted(x["ruleId"] for run in json.loads(r.stdout)["runs"] for x in run["results"] if x["ruleId"] in TARGET)
 
