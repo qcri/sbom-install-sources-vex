@@ -304,7 +304,7 @@ def report():
 
 def probe():
     """Root-cause probes: change one field of an SBOM or of a VEX statement, or apply a statement to another
-    image, and re-scan. Sections match RESULTS.md §4. 4.1 needs the images from `build`; 4.4 needs `scan`."""
+    image, and re-scan. Sections match RESULTS.md §4. 4.1 and 4.6 need the images from `build`; 4.4 needs `scan`."""
     dbs()
     p, work, vm = OUT / "probe", OUT / "probe/work", OUT / "probe/vexmatch"
     for d in (p, work, vm):
@@ -423,6 +423,35 @@ def probe():
     for name, product in (("f-deb-purl-as-trivy-writes-it", deb), ("g-deb-purl-as-syft-writes-it", deb + "&upstream=pyyaml")):
         arg = statement(name, product)
         out(f"VEX {name} on deb-unpatched", f"syft→grype {grype_left(sb, *arg)}, trivy→trivy {trivy_left(tb, *arg)}")
+
+    head("4.6 Manifests: does a requirements.txt next to app.py change anything?")
+    is_yaml = lambda c: re.search(r"/(python3-)?pyyaml@|/python3-yaml@", c.get("purl", ""), re.I)
+    yaml_purls = lambda f: sorted(c["purl"] for c in json.loads(Path(f).read_text()).get("components", []) if is_yaml(c))
+    for v, req in (("pypi", "PyYAML==5.3.1"), ("pypi-fixed", "PyYAML==5.3.1"), ("deb-patched", "PyYAML==5.3.1"),
+                   ("git", "PyYAML @ git+https://github.com/yaml/pyyaml.git@5.3.1"), ("local-backport", "PyYAML==5.3.1")):
+        d, w = work / f"req-{v}", f"/out/probe/work/req-{v}"   # the image plus /app/requirements.txt
+        (d / "app").mkdir(parents=True, exist_ok=True)
+        (d / "app/requirements.txt").write_text(req + "\n")
+        shutil.copy(LAB / "app/app.py", d / "app/app.py")
+        (d / "Containerfile").write_text(f"FROM vexlab/{v}:1.0\nCOPY app/requirements.txt /app/requirements.txt\n")
+        sh("podman", "build", "-q", "-t", f"vexlab/{v}:req", "-f", str(d / "Containerfile"), str(d))
+        sh("podman", "save", "-q", "--format", "docker-archive", "-o", str(d / "image.tar"), f"vexlab/{v}:req")
+        pod(SYFT, "scan", f"docker-archive:{w}/image.tar", "-q", "-o", f"cyclonedx-json={w}/image.syft.cdx.json")
+        pod(TRIVY, "image", "-q", "--input", f"{w}/image.tar", "--format", "cyclonedx",
+            "--output", f"{w}/image.trivy.cdx.json", mounts=T_MOUNT)
+        pod(SYFT, "scan", f"docker-archive:{w}/image.tar", "-q", "--select-catalogers", "+python-package-cataloger",
+            "-o", f"cyclonedx-json={w}/image.syft-declared.cdx.json")
+        pod(SYFT, "scan", f"dir:{w}/app", "-q", "-o", f"cyclonedx-json={w}/dir.syft.cdx.json")
+        pod(TRIVY, "fs", "-q", "--format", "cyclonedx", "--output", f"{w}/dir.trivy.cdx.json", f"{w}/app", mounts=T_MOUNT)
+        lines.append(f"{v}: requirements.txt = {req}")
+        out(f"{v}: image SBOMs (Syft, Trivy) unchanged by it",
+            all(yaml_purls(d / f"image.{s}.cdx.json") == yaml_purls(OUT / v / f"sbom.{s}.cdx.json") for s in SBOMS))
+        vex = ("--vex", f"/out/{v}/vex.openvex.json")
+        for sb, label in (("image.syft-declared", "Syft image + requirements cataloger"),
+                          ("dir.syft", "Syft, source directory"), ("dir.trivy", "Trivy, source directory")):
+            s = f"probe/work/req-{v}/{sb}.cdx.json"
+            out(f"{v}: {label}: PyYAML PURLs", [x.split("?")[0] for x in yaml_purls(OUT / s)])
+            out(f"{v}: {label}: left after --vex", f"grype {grype_left(s, *vex)}, trivy {trivy_left(s, *vex)}")
     (p / "probes.txt").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
