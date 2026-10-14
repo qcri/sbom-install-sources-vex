@@ -31,6 +31,22 @@ We asked four questions:
 3. Does a correct supplier **VEX statement** get applied?
 4. How do the tools **affect each other**: does one tool's choice change another tool's answer?
 
+## Methodology
+
+The method is a controlled comparison in four steps:
+
+1. **Hold the code fixed.** One library (PyYAML 5.3.1), one vulnerability (CVE-2020-14343), and one small service that calls the vulnerable function.
+2. **Vary everything a real pipeline varies.** How the library is installed (7 routes), which tool generates the SBOM (2), which tool scans it (2), and the VEX mode: no VEX, VEX applied by the scanner (`--vex`), or VEX applied afterwards by a post-filter (`vexctl filter`). That makes 7 × 2 × 2 × 3 = 84 results.
+3. **Judge every result against independent ground truth.** An oracle runs a proof of concept inside each image and decides whether that image is exploitable. No scanner output is ever used as truth.
+4. **Explain every error with controlled probes.** For each wrong result, change one thing (one SBOM field, one VEX field, the SBOM format, or the image a statement is applied to), rescan, and see whether the result flips. That isolates the mechanism behind the error.
+
+Because only the packaging changes and the code does not, any disagreement between results is a robustness failure of the tools, not a difference in risk.
+
+{% include figure.liquid loading="eager" path="assets/img/blog/2026/sbom-vex-methodology.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+<div class="caption" markdown="1">
+**Figure 1.** The method: hold the vulnerable code fixed, vary the pipeline around it, judge each result against an exploit-based oracle, and explain each error with one-change probes.
+</div>
+
 ## The experiment
 
 ### The vulnerability
@@ -91,7 +107,7 @@ We checked both hashes against the original artifacts: the PyPI 5.3.1 sdist and 
 
 {% include figure.liquid loading="eager" path="assets/img/blog/2026/sbom-vex-pipeline.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 <div class="caption" markdown="1">
-**Figure 1.** The supplier builds the image, generates the SBOM and writes the VEX statement, with the status taken from the oracle. The consumer scans the SBOM and applies the VEX, either inside the scanner (`--vex`) or afterwards on SARIF output (`vexctl filter`). The numbered badges mark Findings 1–5.
+**Figure 2.** The supplier builds the image, generates the SBOM and writes the VEX statement, with the status taken from the oracle. The consumer scans the SBOM and applies the VEX, either inside the scanner (`--vex`) or afterwards on SARIF output (`vexctl filter`). The numbered badges mark Findings 1–5.
 </div>
 
 The pipeline uses four tools; Trivy and vexctl each play two roles:
@@ -126,10 +142,10 @@ They unpack the image's layers and list what is *installed*, from the package re
 
 {% include figure.liquid loading="lazy" path="assets/img/blog/2026/sbom-vex-identities.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 <div class="caption" markdown="1">
-**Figure 2.** Seven installs, five PURLs in Syft's SBOMs, two versions of the vulnerable file. `pkg:pypi/pyyaml@5.3.1` is shared by five installs, including the patched deb (red link).
+**Figure 3.** Seven installs, five PURLs in Syft's SBOMs, two versions of the vulnerable file. `pkg:pypi/pyyaml@5.3.1` is shared by five installs, including the patched deb (red link).
 </div>
 
-Figure 2 is the root of almost everything that follows. Tools match on identity (the PURL), but identity and code diverge in both directions:
+Figure 3 is the root of almost everything that follows. Tools match on identity (the PURL), but identity and code diverge in both directions:
 
 - **Different identities, same code.** Ubuntu's patched deb, the backport and 6.0.2 contain the same fixed file under three different identities.
 - **Same identity, different code.** `pkg:pypi/pyyaml@5.3.1` names the vulnerable PyPI release, but Syft also gives it to the patched deb.
@@ -138,7 +154,7 @@ Figure 2 is the root of almost everything that follows. Tools match on identity 
 
 {% include figure.liquid loading="lazy" path="assets/img/blog/2026/sbom-vex-verdicts.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 <div class="caption" markdown="1">
-**Figure 3.** Verdict of each scan against the oracle: ✓ agrees, **FP** reported but not vulnerable, **FN** vulnerable but not reported. The table below has the same data.
+**Figure 4.** Verdict of each scan against the oracle: ✓ agrees, **FP** reported but not vulnerable, **FN** vulnerable but not reported. The table below has the same data.
 </div>
 
 | install (truth) | Syft→Grype | Syft→Trivy | Trivy→Grype | Trivy→Trivy |
@@ -163,7 +179,7 @@ A caution on the numbers: the 28 cells are not independent samples, and the coun
 
 {% include figure.liquid loading="lazy" path="assets/img/blog/2026/sbom-vex-duplicate.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 <div class="caption" markdown="1">
-**Figure 4.** The patched deb contains Python packaging metadata that still says `Version: 5.3.1`. Syft reports it as a second component. Whether that becomes a false positive depends on the SBOM format.
+**Figure 5.** The patched deb contains Python packaging metadata that still says `Version: 5.3.1`. Syft reports it as a second component. Whether that becomes a false positive depends on the SBOM format.
 </div>
 
 **What is in the image.** Ubuntu's `python3-yaml 5.3.1-1ubuntu0.1` contains the fixed `constructor.py`. It also contains `PyYAML-5.3.1.egg-info`, the Python packaging metadata written from PyYAML's own `setup.py` when Debian built the package.
@@ -228,7 +244,7 @@ To find out what each scanner actually reads, we edited one field at a time in t
 
 Grype understands either of Syft's two encodings; Trivy understands only its own property; and neither reads the other vendor's field or SPDX's free text. Trivy does warn about this: "Third-party SBOM may lead to inaccurate vulnerability detection".
 
-The consequences show up directly in Figure 3. Trivy's SBOM read by Grype misses the vulnerable deb entirely. Syft's SBOM read by Trivy misses the deb too, and is scored correct only because Syft's PyPI duplicate (Finding 1) happens to carry the CVE. **One tool's defect hides another's**: if Syft dropped the duplicate as Trivy's generator does, that cell would become a false negative.
+The consequences show up directly in Figure 4. Trivy's SBOM read by Grype misses the vulnerable deb entirely. Syft's SBOM read by Trivy misses the deb too, and is scored correct only because Syft's PyPI duplicate (Finding 1) happens to carry the CVE. **One tool's defect hides another's**: if Syft dropped the duplicate as Trivy's generator does, that cell would become a false negative.
 
 ## Finding 3: the PURL forgets where code came from
 
@@ -260,7 +276,7 @@ As a negative control, we applied the patched deb's statement to the vulnerable 
 
 {% include figure.liquid loading="lazy" path="assets/img/blog/2026/sbom-vex-reach.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 <div class="caption" markdown="1">
-**Figure 5.** Verdict after applying each statement. An FP on local-backport means the statement was not applied; an FN on pypi means the statement leaked onto a real vulnerability.
+**Figure 6.** Verdict after applying each statement. An FP on local-backport means the statement was not applied; an FN on pypi means the statement leaked onto a real vulnerability.
 </div>
 
 From these probes, plus two more on PURL qualifiers, the observed rules are:
@@ -311,7 +327,7 @@ Every SBOM so far was made from the built image. Many pipelines make it earlier,
 |---|---|---|---|
 | pypi (vulnerable) | `PyYAML==5.3.1` | ✓ | ✓ |
 | pypi-fixed (not) | `PyYAML==5.3.1`, stale: 6.0.2 is installed | ✓ | **FP** |
-| deb-patched (not) | `PyYAML==5.3.1`, though apt provides it | as in Figure 3 | **FP**, for both generators |
+| deb-patched (not) | `PyYAML==5.3.1`, though apt provides it | as in Figure 4 | **FP**, for both generators |
 | git (vulnerable) | `PyYAML @ git+https://github.com/yaml/pyyaml.git@5.3.1` | ✓ | **FN**: neither generator records the git reference |
 | local-backport (not) | `PyYAML==5.3.1`, the public version over the patched build | ✓ with VEX | **FP** that the backport's VEX cannot reach |
 

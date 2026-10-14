@@ -108,6 +108,61 @@ def box(s, x, y, w, h, title, sub, fill=CARD):
     s.text(x + 16, y + 51, sub, 13.5, INK2)
 
 
+def methodology():
+    s = Svg(1200, 420, "Methodology",
+            "Four steps: hold the code fixed; vary the install route, SBOM generator, scanner and VEX application "
+            "(84 results); judge each result against an exploit-based oracle; explain each error with probes that "
+            "change one thing and rescan.")
+    steps = ((24, 240, "Hold the code fixed"), (300, 340, "Vary the pipeline"),
+             (676, 260, "Judge every result"), (972, 204, "Explain every error"))
+    for i, (x, w, title) in enumerate(steps, 1):
+        s.parts.append(f'<circle cx="{x + 12}" cy="38" r="12" fill="{ACCENT}"/>')
+        s.text(x + 12, 43, str(i), 13.5, "#ffffff", 700, "middle")
+        s.text(x + 32, 44, title, 16, INK, 600)
+    for y, title, sub in ((76, "one library", "PyYAML 5.3.1"), (152, "one vulnerability", "CVE-2020-14343"),
+                          (228, "one application", "calls yaml.full_load")):
+        s.rect(24, y, 240, 62, CARD, AXIS, 8)
+        s.text(40, y + 26, title, 15.5, INK, 600)
+        s.text(40, y + 48, sub, 13.5, INK2)
+    s.text(24, 322, "only 2 versions of the", 13.5, INK2)
+    s.text(24, 341, "vulnerable file exist", 13.5, INK2)
+    factors = (("7 install routes", "2× apt · PyPI · git · local · backport · 6.0.2"),
+               ("2 SBOM generators", "Syft · Trivy"), ("2 scanners", "Grype · Trivy"),
+               ("3 VEX modes", "without VEX · --vex · vexctl filter"))
+    for i, (title, sub) in enumerate(factors):
+        y = 76 + i * 70
+        s.rect(300, y, 340, 54, CARD, AXIS, 8)
+        s.text(316, y + 23, title, 15.5, INK, 600)
+        s.text(316, y + 43, sub, 13.5, INK2)
+        if i < 3:
+            s.text(470, y + 68, "×", 19, INK2, 700, "middle")
+    s.text(300, 372, "= 84 results, 28 per VEX mode", 14, INK, 600)
+    s.rect(676, 76, 260, 92, CARD, AXIS, 8)
+    s.text(692, 102, "Oracle", 15.5, INK, 600)
+    s.text(692, 124, "runs the exploit inside each", 13.5, INK2)
+    s.text(692, 144, "image: vulnerable or not", 13.5, INK2)
+    s.line([(806, 168), (806, 196)])
+    s.text(816, 188, "compare", 13, INK2, 600)
+    for i, (v, label) in enumerate((("ok", "agrees"), ("FP", "reported, not vulnerable"), ("FN", "vulnerable, not reported"))):
+        y = 206 + i * 44
+        s.cell(676, y, 44, 32, v)
+        s.text(730, y + 21, label, 13.5, INK2)
+    s.rect(972, 76, 204, 268, CARD, AXIS, 8)
+    s.text(988, 102, "Probes", 15.5, INK, 600)
+    s.text(988, 126, "for each error, change", 13.5, INK2)
+    s.text(988, 145, "one thing and rescan:", 13.5, INK2)
+    for i, t in enumerate(("one SBOM field", "one VEX field", "the SBOM format", "where a statement", "is applied")):
+        s.text(1000 if i != 4 else 1012, 174 + i * 22, ("· " if i != 4 else "") + t, 13.5, INK)
+    s.text(988, 300, "→ the mechanism", 14, INK, 600)
+    s.text(988, 320, "behind the error", 14, INK, 600)
+    s.line([(266, 196), (296, 196)])
+    s.line([(642, 196), (672, 196)])
+    s.line([(938, 272), (968, 272)])
+    s.text(24, 404, "Only the packaging varies, never the code, so any disagreement between results is a failure of the "
+           "tools, not a difference in risk.", 14, INK2)
+    s.save("sbom-vex-methodology")
+
+
 def pipeline():
     s = Svg(1200, 520, "The experiment's pipeline",
             "Supplier side: an image goes to an SBOM generator and to an oracle that drives the VEX statement. "
@@ -311,6 +366,7 @@ def reach():
 
 
 if __name__ == "__main__":
+    methodology()
     pipeline()
     identities()
     verdicts()
