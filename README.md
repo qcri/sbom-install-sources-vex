@@ -65,12 +65,14 @@ podman run -it vexlab/git:1.0 bash   # inspect any variant; /app/evidence.sh pri
 
 # or just look at the reported run without rebuilding:
 tar -xJf out/scans-2026-10-08.tar.xz && python3 -I run.py report
+python3 -I tools/validate.py         # independent check: recompute every row from the raw scans
 ```
 
 ## Layout
 
 ```
 run.py                   whole pipeline, one function per stage
+tools/validate.py        independent re-parse of the raw scans, checked against out/results.json and out/tables.md
 app/                     app.py (product), oracle.py (ground truth), evidence.{sh,py}
 variants/<name>/         one Containerfile per install method
 src/patches/             Ubuntu's CVE-2020-14343.patch (= upstream commit 7adc0db)
