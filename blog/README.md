@@ -39,4 +39,4 @@ Checked on 2026-10-13 by adding the post to a clone of the site and building it 
 
 - **Repository visibility.** The post links https://github.com/JK-code505/sbom-install-sources-vex (in "Reproduce it" and "Credits"). Make the repository public before publishing, or readers will get a 404.
 - **Date.** Check the date in the file name and the front matter.
-- **Dependency on PR #6.** Findings 1–5 follow the corrected results in PR #6. If that PR changes, update the post to match.
+- **Dependencies on PRs #6 and #8.** Findings 1–5 follow the corrected results in PR #6; Finding 6 uses probe 4.6 from PR #8. If either PR changes, update the post to match.
