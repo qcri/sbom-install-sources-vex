@@ -1,8 +1,8 @@
-# One library, seven installs: SBOM → scanner → VEX
+# One library, eight installs: SBOM → scanner → VEX
 
 **Question.** The same PyYAML 5.3.1 code (CVE-2020-14343) is installed in different ways. Does the SBOM identify it correctly, does the scanner flag it correctly, and does a correct supplier VEX statement get applied?
 
-**Run it:** `python3 -I run.py` (stages: `fetch build evidence sbom vex scan report probe`). Raw scan output from the run reported here: `out/scans-2026-10-08.tar.xz`. Tool versions are in `out/versions.txt`: Syft 1.54.1, Grype 0.120.1 (DB built 2026-10-08), Trivy 0.75.0 (DB 2026-10-07), vexctl v0.4.4. Re-scanning every committed SBOM on 2026-10-13 with newer DBs gave the same 32 results; the probes in §4 are from that date.
+**Run it:** `python3 -I run.py` (stages: `fetch build evidence sbom vex scan report probe`). Raw scan output from the run reported here: `out/scans-2026-10-08.tar.xz`. Tool versions are in `out/versions.txt`: Syft 1.54.1, Grype 0.120.1 (DB built 2026-10-08), Trivy 0.75.0 (DB 2026-10-07), vexctl v0.4.4. Re-scanning every committed SBOM on 2026-10-13 with newer DBs gave the same 32 results; the probes in §4 are from that date. The variant local-relabel was added on 2026-11-05 (raw scans: `out/scans-2026-11-05-local-relabel.tar.xz`). It was scanned with the Grype DB built 2026-10-12 and the Trivy DB of 2026-10-13, and re-scanning the other seven variants' committed SBOMs with those DBs reproduced all 32 rows of the 2026-10-08 run.
 
 ## Terms
 
@@ -29,9 +29,12 @@ One image per variant (`variants/<name>/Containerfile`). All images are `ubuntu:
 | git | venv, `pip install git+https://github.com/yaml/pyyaml.git@5.3.1` |
 | local | venv, `pip install ./pyyaml-5.3.1` (unmodified sdist tree, sha256-checked by `fetch`) |
 | local-backport | venv, same tree plus **Ubuntu's own `CVE-2020-14343.patch`**, version set to `5.3.1+acme1` (see below) |
+| local-relabel | venv, the same unmodified tree with only its version set to `6.0.2` (see below) |
 | pypi-fixed | venv, `pip install PyYAML==6.0.2` (control) |
 
 **local-backport** models an organisation ("Acme") that cannot upgrade PyYAML and instead *backports* the fix: it takes the change that fixed the CVE in a newer release (upstream commit 7adc0db, released in 5.4) and applies it to the 5.3.1 it ships, as Linux distributions do. `fetch` applies the patch Ubuntu used (`src/patches/CVE-2020-14343.patch`, byte-identical to Ubuntu's and the same change as 7adc0db) to the unmodified 5.3.1 tree and sets the version to `5.3.1+acme1`. In PEP 440, `+acme1` is a *local version label*: it marks a rebuild without changing the public version. So `5.3.1+acme1` still falls in the advisory's affected range `< 5.4`, while its PURL, `pkg:pypi/pyyaml@5.3.1%2Bacme1`, differs from upstream's `pkg:pypi/pyyaml@5.3.1`. This is the case VEX exists for: the code is fixed, but a scanner that only sees the version still reports the CVE (§3). The distinct version is what lets the supplier's statement name this rebuild without also covering upstream 5.3.1 (§4.5).
+
+**local-relabel** is the reverse case: vulnerable code whose declared version says it is fixed, as in a mislabelled or tampered build. `fetch` copies the unmodified 5.3.1 tree and changes only `VERSION` in `setup.py` to `6.0.2`; `constructor.py` and `yaml.__version__` stay 5.3.1. Its PURL, `pkg:pypi/pyyaml@6.0.2`, is the same as the fixed control's, and 6.0.2 is outside the affected range `< 5.4`.
 
 The pip-built 5.3.1 variants have no libyaml C extension (`with_libyaml: false` in the evidence); the debs and the 6.0.2 wheel have one. This does not affect the CVE: `full_load` uses the pure-Python `FullLoader`.
 
@@ -72,11 +75,12 @@ Trivy appears twice because it plays two roles: `trivy image` generates SBOMs, `
 | git | 5.3.1 (`direct_url.json`: commit 538b5c9) | – | `3b751a7f…` | `(42,)` | **vulnerable** |
 | local | 5.3.1 (`direct_url.json`: `file:///src/pyyaml`) | – | `3b751a7f…` | `(42,)` | **vulnerable** |
 | local-backport | 5.3.1+acme1 (`yaml.__version__` still `5.3.1`) | – | `90d8247d…` | ConstructorError | not vulnerable |
+| local-relabel | **6.0.2** (`yaml.__version__` still `5.3.1`) | – | `3b751a7f…` | `(42,)` | **vulnerable** |
 | pypi-fixed | 6.0.2 | – | `90d8247d…` | ConstructorError | not vulnerable |
 
 Integrity checks: pip's `RECORD` matches every installed file, and `dpkg --verify` matches the deb's md5sums. The only `dpkg --verify` warning is `/usr/share/doc/python3-yaml/README`, which the minimal Ubuntu image strips. `RECORD` is written by pip at install time, so it shows only that the files were not changed afterwards; the link to the upstream releases is the hash comparison below.
 
-**There are only two versions of `constructor.py`, the file that contains the vulnerability.** The vulnerable one (`3b751a7f…`) is in the 5.3.1 sdist and in Ubuntu's `5.3.1-1`; the fixed one (`90d8247d…`) is in Ubuntu's `5.3.1-1ubuntu0.1`, in local-backport and in PyYAML 6.0.2. (Other modules still differ between the patched 5.3.1 and 6.0.2.) Yet in deb-patched the Python metadata says `5.3.1`: the fix is visible only in the dpkg version (`-1ubuntu0.1`) and in the file contents. Syft's SBOMs of the two deb images do list `constructor.py` with its SHA-256, but no scanner uses file hashes for matching.
+**There are only two versions of `constructor.py`, the file that contains the vulnerability.** The vulnerable one (`3b751a7f…`) is in the 5.3.1 sdist (so also in local-relabel, whose metadata says 6.0.2) and in Ubuntu's `5.3.1-1`; the fixed one (`90d8247d…`) is in Ubuntu's `5.3.1-1ubuntu0.1`, in local-backport and in PyYAML 6.0.2. (Other modules still differ between the patched 5.3.1 and 6.0.2.) Yet in deb-patched the Python metadata says `5.3.1`: the fix is visible only in the dpkg version (`-1ubuntu0.1`) and in the file contents. Syft's SBOMs of the two deb images do list `constructor.py` with its SHA-256, but no scanner uses file hashes for matching.
 
 ## 2. What each SBOM records (`out/<variant>/sbom.{syft,trivy}.cdx.json`)
 
@@ -89,6 +93,7 @@ All SBOMs are CycloneDX 1.7 JSON. `out/tables.md` has the full table, including 
 | git | `pkg:pypi/pyyaml@5.3.1?vcs_url=git+https://github.com/yaml/pyyaml.git@538b5c9…`, plus a `vcs` external reference with the commit | `pkg:pypi/pyyaml@5.3.1` (origin lost) |
 | local | `pkg:pypi/pyyaml@5.3.1`, plus a `vcs` external reference `file:///src/pyyaml` | `pkg:pypi/pyyaml@5.3.1` (origin lost) |
 | local-backport | `pkg:pypi/pyyaml@5.3.1%2Bacme1`, plus a `vcs` external reference `file:///src/pyyaml` | `pkg:pypi/pyyaml@5.3.1%2Bacme1` (origin lost) |
+| local-relabel | `pkg:pypi/pyyaml@6.0.2`, plus a `vcs` external reference `file:///src/pyyaml` | `pkg:pypi/pyyaml@6.0.2` (origin lost) |
 | pypi-fixed | `pkg:pypi/pyyaml@6.0.2` | `pkg:pypi/pyyaml@6.0.2` |
 
 `<rev>` is the Debian version, `5.3.1-1` or `5.3.1-1ubuntu0.1`. Neither SBOM generator puts a PURL on the SBOM root (the image), because a local image archive has no registry digest.
@@ -97,7 +102,7 @@ All SBOMs are CycloneDX 1.7 JSON. `out/tables.md` has the full table, including 
 
 This is the end-to-end result, and it answers questions 2 and 3: does the scanner report the vulnerability correctly, and does a correct VEX statement fix the wrong reports? Each cell is the verdict for one SBOM→scanner pair on one variant, **without VEX / with the supplier VEX applied by `--vex`**. §4 explains every ❌.
 
-The supplier VEX: the author is "Example PSIRT" (`vexctl create`); the status comes from the oracle (`affected` if vulnerable, otherwise `fixed`); the product is the PURL the supplier knows it shipped (from the dpkg version or the wheel metadata); the statement lists both the CVE and the GHSA ID. An `affected` statement removes nothing, so for the four vulnerable variants both verdicts are always the same. Findings behind each verdict: `out/tables.md`; raw results: `out/<variant>/scan/`.
+The supplier VEX: the author is "Example PSIRT" (`vexctl create`); the status comes from the oracle (`affected` if vulnerable, otherwise `fixed`); the product is the PURL the supplier knows it shipped (from the dpkg version or the wheel metadata); the statement lists both the CVE and the GHSA ID. An `affected` statement removes nothing, so for the five vulnerable variants both verdicts are always the same. Findings behind each verdict: `out/tables.md`; raw results: `out/<variant>/scan/`.
 
 | variant (truth) | Syft→Grype | Syft→Trivy | Trivy→Grype | Trivy→Trivy |
 |---|---|---|---|---|
@@ -107,16 +112,20 @@ The supplier VEX: the author is "Example PSIRT" (`vexctl create`); the status co
 | git (vuln) | ✅ / ✅ | ✅ / ✅ | ✅ / ✅ | ✅ / ✅ |
 | local (vuln) | ✅ / ✅ | ✅ / ✅ | ✅ / ✅ | ✅ / ✅ |
 | local-backport (not) | ❌ FP / ✅ | ❌ FP / ✅ | ❌ FP / ✅ | ❌ FP / ✅ |
+| local-relabel (vuln) | ❌ FN / ❌ FN (e) | ❌ FN / ❌ FN (e) | ❌ FN / ❌ FN (e) | ❌ FN / ❌ FN (e) |
 | pypi-fixed (not) | ✅ / ✅ | ✅ / ✅ | ✅ / ✅ | ✅ / ✅ |
 
 - (a) Reported only on Syft's PyPI duplicate `pkg:pypi/pyyaml@5.3.1`; Trivy misses the deb component itself (§4.2). Without the duplicate this cell would be an FN.
 - (b) Grype cannot link Trivy's `python3-yaml` component to Ubuntu's advisory (§4.2).
 - (c) The finding is on Syft's PyPI duplicate. The supplier statement names the deb, so it does not apply to it (§4.1).
 - (d) Correct only because Grype cannot match the deb at all, as in (b).
+- (e) Both SBOMs list `pkg:pypi/pyyaml@6.0.2`, outside the affected range `< 5.4`. Neither SBOM contains `5.3.1` or the vulnerable file's hash, and the supplier's `affected` statement cannot add a finding, so every mode misses the CVE.
 
-Over the 28 SBOM→scanner pairs, 7 verdicts are wrong without VEX and 3 with `--vex`. The 3 that remain are deb cases, caused by how the SBOMs record a deb (§4.1, §4.2). The 4 that VEX fixed are the backport, which a version-based scanner cannot recognise unless it is told. For local-backport, `fixed` and `not_affected` / `vulnerable_code_not_present` were both applied by both scanners and suppressed the same findings, so the choice between them only matters to the people reading the VEX (§5).
+Over the 32 SBOM→scanner pairs, 11 verdicts are wrong without VEX and 7 with `--vex`. Of the 7 that remain, 3 are deb cases, caused by how the SBOMs record a deb (§4.1, §4.2), and 4 are local-relabel, whose vulnerable code declares a fixed version. The 4 that VEX fixed are the backport, which a version-based scanner cannot recognise unless it is told. For local-backport, `fixed` and `not_affected` / `vulnerable_code_not_present` were both applied by both scanners and suppressed the same findings, so the choice between them only matters to the people reading the VEX (§5).
 
-Applying the same VEX documents with `vexctl filter` instead gives 4 wrong verdicts: the FN of Trivy→Grype on deb-unpatched, and three Grype FPs (deb-patched Syft→Grype and both local-backport Grype pairs), because `vexctl filter` never removes Grype's PyPI findings (§4.4). deb-patched Syft→Trivy becomes ✅, but only because `vexctl filter` ignores the product: the deb statement removed a finding on the PyPI component.
+Applying the same VEX documents with `vexctl filter` instead gives 8 wrong verdicts: the FN of Trivy→Grype on deb-unpatched, the four local-relabel FNs, and three Grype FPs (deb-patched Syft→Grype and both local-backport Grype pairs), because `vexctl filter` never removes Grype's PyPI findings (§4.4). deb-patched Syft→Trivy becomes ✅, but only because `vexctl filter` ignores the product: the deb statement removed a finding on the PyPI component.
+
+**local-relabel is local-backport in reverse.** In local-backport, fixed code declares a version inside the affected range and is flagged until VEX says `fixed`. In local-relabel, vulnerable code declares a fixed version and is missed, and VEX cannot help: `--vex` only suppresses findings. `pkg:pypi/pyyaml@6.0.2` now names fixed code in pypi-fixed and vulnerable code in local-relabel, and the two suppliers' statements for that PURL say `fixed` and `affected`.
 
 ## 4. Why the errors happen (`out/probe/probes.txt`, `python3 -I run.py probe`)
 
@@ -235,5 +244,5 @@ Two more probes on PURL qualifiers:
 - **Package as product.** The supplier VEX uses the package as the product. A VEX scoped to the image (image as product, package as subcomponent, as CISA frames it) can't be tested here, because neither SBOM gives the image root a PURL. Pushing the images to a local registry would give them digests and allow that test (#2).
 - **`affected` statements** cannot change a scan's output, so "is the VEX applied?" is tested only on the three non-vulnerable variants and in the probes.
 - **Base image.** Ubuntu 20.04 is past standard support (Trivy warns about it; Grype uses the ESM channel). That is fine for this 2020 CVE, but newer advisories may be handled differently.
-- One CVE, one ecosystem, one version of each tool. Results are from 2026-10-08.
+- One CVE, one ecosystem, one version of each tool. Results are from 2026-10-08, except local-relabel (2026-11-05; DB dates in `out/versions.txt`).
 - Not yet run: cve-bin-tool and Dependency-Track (CycloneDX VEX path).

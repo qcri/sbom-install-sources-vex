@@ -1,4 +1,4 @@
-"""PyYAML 5.3.1 installed 7 ways -> SBOM (Syft, Trivy) -> supplier VEX (vexctl) -> scan (Grype, Trivy, vexctl filter).
+"""PyYAML 5.3.1 installed 8 ways -> SBOM (Syft, Trivy) -> supplier VEX (vexctl) -> scan (Grype, Trivy, vexctl filter).
 
 Usage:  python3 -I run.py [stage ...]
         stages: fetch build evidence sbom vex scan report probe   (default: all, in that order)
@@ -32,6 +32,7 @@ VARIANTS = {
     "git":            "pkg:pypi/pyyaml@5.3.1",
     "local":          "pkg:pypi/pyyaml@5.3.1",
     "local-backport": "pkg:pypi/pyyaml@5.3.1%2Bacme1",
+    "local-relabel":  "pkg:pypi/pyyaml@6.0.2",
     "pypi-fixed":     "pkg:pypi/pyyaml@6.0.2",
 }
 SBOMS = ("syft", "trivy")
@@ -79,12 +80,12 @@ def download(url, sha, dest):
 
 
 def fetch():
-    """Source trees for the two local variants, and vexctl. All pinned by sha256."""
+    """Source trees for the three local variants, and vexctl. All pinned by sha256."""
     src = LAB / "src"
     download(*SDIST, src / "dl/PyYAML-5.3.1.tar.gz")
     download(*VEXCTL_BIN, VEXCTL)
     VEXCTL.chmod(0o755)
-    for d in ("pyyaml-5.3.1", "pyyaml-5.3.1-acme1", "PyYAML-5.3.1"):
+    for d in ("pyyaml-5.3.1", "pyyaml-5.3.1-acme1", "pyyaml-5.3.1-relabel", "PyYAML-5.3.1"):
         shutil.rmtree(src / d, ignore_errors=True)
     with tarfile.open(src / "dl/PyYAML-5.3.1.tar.gz") as t:
         t.extractall(src, filter="data")
@@ -94,6 +95,9 @@ def fetch():
     sh("patch", "-p1", "--no-backup-if-mismatch", "-i", str(src / "patches/CVE-2020-14343.patch"), cwd=acme)
     setup = acme / "setup.py"
     setup.write_text(setup.read_text().replace("VERSION = '5.3.1'", "VERSION = '5.3.1+acme1'"))
+    shutil.copytree(src / "pyyaml-5.3.1", src / "pyyaml-5.3.1-relabel")
+    setup = src / "pyyaml-5.3.1-relabel/setup.py"   # unchanged 5.3.1 code; only the declared version says 6.0.2
+    setup.write_text(setup.read_text().replace("VERSION = '5.3.1'", "VERSION = '6.0.2'"))
 
 
 def build():

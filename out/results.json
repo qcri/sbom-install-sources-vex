@@ -502,6 +502,34 @@
   ],
   "vexctl_left": []
  },
+ "local-relabel|syft|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "local-relabel|syft|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "local-relabel|trivy|grype|vex": {
+  "truth": "vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
+ "local-relabel|trivy|trivy|vex": {
+  "truth": "vulnerable",
+  "novex": [],
+  "vex": [],
+  "suppressed": [],
+  "vexctl_left": []
+ },
  "pypi-fixed|syft|grype|vex": {
   "truth": "not vulnerable",
   "novex": [],
