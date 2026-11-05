@@ -1,7 +1,7 @@
 """Independent check of the reported results: re-parse the raw scanner output, recompute every row and the
 verdict totals, and compare them with out/results.json and out/tables.md. Shares no code with run.py.
 
-usage:  tar -xJf out/scans-2026-10-08.tar.xz      # or run `python3 -I run.py scan` first
+usage:  tar -xJf out/scans-2026-10-08.tar.xz; tar -xJf out/scans-2026-11-05-local-relabel.tar.xz   # or run `python3 -I run.py scan` first
         python3 -I tools/validate.py [out_dir]       # exit 0 = everything matches
 """
 import json, re, sys
@@ -9,7 +9,7 @@ from pathlib import Path
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "out"
 TARGET = {"CVE-2020-14343", "GHSA-8q59-q68h-6hv4"}
-VARIANTS = ["deb-unpatched", "deb-patched", "pypi", "git", "local", "local-backport", "pypi-fixed"]
+VARIANTS = ["deb-unpatched", "deb-patched", "pypi", "git", "local", "local-backport", "local-relabel", "pypi-fixed"]
 PAIRS = [("syft", "grype"), ("syft", "trivy"), ("trivy", "grype"), ("trivy", "trivy")]
 
 

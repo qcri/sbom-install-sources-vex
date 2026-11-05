@@ -14,6 +14,8 @@
 | local | trivy | `pkg:pypi/pyyaml@5.3.1` | — | — |
 | local-backport | syft | `pkg:pypi/pyyaml@5.3.1%2Bacme1` | — | vcs reference `file:///src/pyyaml` |
 | local-backport | trivy | `pkg:pypi/pyyaml@5.3.1%2Bacme1` | — | — |
+| local-relabel | syft | `pkg:pypi/pyyaml@6.0.2` | — | vcs reference `file:///src/pyyaml` |
+| local-relabel | trivy | `pkg:pypi/pyyaml@6.0.2` | — | — |
 | pypi-fixed | syft | `pkg:pypi/pyyaml@6.0.2` | — | — |
 | pypi-fixed | trivy | `pkg:pypi/pyyaml@6.0.2` | — | — |
 
@@ -51,9 +53,13 @@ A verdict compares a scan with the oracle: ✅ agrees, ❌ FP reported but not v
 | local-backport | not vulnerable | trivy→grype | vex-vcnp | `GHSA-8q59-q68h-6hv4` on `pkg:pypi/pyyaml@5.3.1%2Bacme1` | ❌ FP | — | not_affected | ✅ | 1 left | ❌ FP |
 | local-backport | not vulnerable | trivy→trivy | vex | `CVE-2020-14343` on `pkg:pypi/pyyaml@5.3.1%2Bacme1` | ❌ FP | — | fixed | ✅ | 0 left | ✅ |
 | local-backport | not vulnerable | trivy→trivy | vex-vcnp | `CVE-2020-14343` on `pkg:pypi/pyyaml@5.3.1%2Bacme1` | ❌ FP | — | not_affected | ✅ | 0 left | ✅ |
+| local-relabel | vulnerable | syft→grype | vex | — | ❌ FN | — | — | ❌ FN | 0 left | ❌ FN |
+| local-relabel | vulnerable | syft→trivy | vex | — | ❌ FN | — | — | ❌ FN | 0 left | ❌ FN |
+| local-relabel | vulnerable | trivy→grype | vex | — | ❌ FN | — | — | ❌ FN | 0 left | ❌ FN |
+| local-relabel | vulnerable | trivy→trivy | vex | — | ❌ FN | — | — | ❌ FN | 0 left | ❌ FN |
 | pypi-fixed | not vulnerable | syft→grype | vex | — | ✅ | — | — | ✅ | 0 left | ✅ |
 | pypi-fixed | not vulnerable | syft→trivy | vex | — | ✅ | — | — | ✅ | 0 left | ✅ |
 | pypi-fixed | not vulnerable | trivy→grype | vex | — | ✅ | — | — | ✅ | 0 left | ✅ |
 | pypi-fixed | not vulnerable | trivy→trivy | vex | — | ✅ | — | — | ✅ | 0 left | ✅ |
 
-Wrong verdicts over the 28 SBOM→scanner pairs (each variant's `vex` document): without VEX 7 of 28, with `--vex` 3 of 28, with `vexctl filter` 4 of 28.
+Wrong verdicts over the 32 SBOM→scanner pairs (each variant's `vex` document): without VEX 11 of 32, with `--vex` 7 of 32, with `vexctl filter` 8 of 32.

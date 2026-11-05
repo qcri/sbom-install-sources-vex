@@ -10,6 +10,10 @@ Status, decisions and next steps for whoever continues this experiment. Read [RE
   - Ground truth was re-checked against PyPI's and Ubuntu's own packages.
   - New probes (`run.py probe`, RESULTS.md §4) corrected four explanations: the deb-patched FP depends on CycloneDX (§4.1); Grype also reads `syft:metadata:source` (§4.2); Syft keeps the local-install origin (§4.3); `vexctl filter` ignores products by construction (§4.4).
   - `out/probe/` was regenerated on 2026-10-13; DB dates are in `out/versions.txt`.
+- **Added 2026-11-05: local-relabel**, the unmodified 5.3.1 tree rebuilt as version `6.0.2` (vulnerable code, fixed version label).
+  - Built and scanned with the pinned tools and the DBs of 2026-10-12/13; the frozen 2026-10-08 DBs were not available on that host. Re-scanning the other seven variants' committed SBOMs with the same DBs reproduced all 32 rows of the 2026-10-08 run.
+  - The host had Docker but not podman, so `run.py`'s stages ran through a podman-to-docker shim.
+  - Raw scans: `out/scans-2026-11-05-local-relabel.tar.xz`. `out/probe/` was not re-run.
 - The supplier VEX uses the **package as the product**. An image-scoped VEX (image = product, package = subcomponent, as CISA frames it) is **not tested yet**, because neither SBOM gives the image root a PURL when scanning a local image archive (#2).
 
 ## Decisions taken (and why)
@@ -17,6 +21,7 @@ Status, decisions and next steps for whoever continues this experiment. Read [RE
 - **One base image for all variants (`ubuntu:20.04`, Python 3.8).** Ubuntu 20.04 is the only release that ships both the unpatched (`5.3.1-1`) and patched (`5.3.1-1ubuntu0.1`) `python3-yaml`. Keeping every variant on it leaves the install method as the only difference that matters for this CVE (the libyaml C extension also differs; it is not involved). PyYAML 5.3.1 also builds and is exploitable on Python 3.10–3.13 (tested), if a newer base is ever needed for the pip variants.
 - **The oracle decides truth, never a scanner.** The VEX status is derived from it, so every VEX statement is correct by construction. The experiment then measures only whether the statement is *applied*.
 - **local-backport uses Ubuntu's own patch.** The result is a `constructor.py` byte-identical to the patched deb's and to 6.0.2's, which isolates packaging and identity as the only variables.
+- **local-relabel changes only the version in `setup.py`.** The code, `yaml.__version__` included, stays 5.3.1, so the declared version is the only difference from local. It tests the hypothesis in the direction opposite to local-backport: vulnerable code with a fixed version label.
 - **`fixed` vs `not_affected/vulnerable_code_not_present` for the backport.** Both were issued, and scanners treat them identically. The evidence (a patch, identical to the fixed release) fits CISA's `fixed` better.
 - **Pinned tools.** Syft, Grype, Trivy and the `ubuntu:20.04` base image are pinned by digest (Grype and Trivy since 2026-10-13; those digests reproduce the reported results). The vulnerability DBs are downloaded on first use (`dbs()` in `run.py`) and then frozen: `GRYPE_DB_AUTO_UPDATE=false` and `GRYPE_DB_VALIDATE_AGE=false` for Grype, `--skip-db-update` for Trivy. Their dates are in `out/versions.txt`.
 
@@ -29,7 +34,7 @@ Open issues, roughly in order:
    - does it stop the leakage in RESULTS.md §4.5?
    - do Grype and Trivy both honour it on SBOM input?
 3. **Docker support and script-generated provenance** (#3).
-4. **Report errors by mechanism** (#4), not only as a count out of 28.
+4. **Report errors by mechanism** (#4), not only as a count out of 32.
 5. **Upstream reports** (#5): Syft (CycloneDX drops the ownership relationship), vexctl (product-blind filter, GHSA rule IDs).
 6. **More consumers and VEX formats.**
    - cve-bin-tool (reads OpenVEX, CSAF and CycloneDX VEX);

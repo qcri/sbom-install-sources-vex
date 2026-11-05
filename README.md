@@ -1,6 +1,6 @@
-# Same library, seven installs: what SBOMs, scanners and VEX miss
+# Same library, eight installs: what SBOMs, scanners and VEX miss
 
-**Question.** Install the same vulnerable library (PyYAML 5.3.1, CVE-2020-14343) in different ways: Ubuntu apt, PyPI, git, a local source tree, and a local backport (a 5.3.1 rebuild with the fix patched in). Then ask three things:
+**Question.** Install the same vulnerable library (PyYAML 5.3.1, CVE-2020-14343) in different ways: Ubuntu apt, PyPI, git, a local source tree, a local backport (a 5.3.1 rebuild with the fix patched in), and a local relabel (the unchanged 5.3.1 code rebuilt as version 6.0.2). Then ask three things:
 1. Does each SBOM generator identify the component correctly?
 2. Does each scanner report the vulnerability correctly?
 3. Does a correct supplier VEX statement actually get applied?
@@ -16,7 +16,7 @@ SUPPLIER ("Example PSIRT")                      CONSUMER
                                      (vexctl create)            --vex  or  vexctl filter on SARIF
 ```
 
-- **7 images, all `ubuntu:20.04` / Python 3.8.10.** Only the install method differs:
+- **8 images, all `ubuntu:20.04` / Python 3.8.10.** Only the install method differs:
 
   | variant | install |
   |---|---|
@@ -26,6 +26,7 @@ SUPPLIER ("Example PSIRT")                      CONSUMER
   | git | `pip install git+https://github.com/yaml/pyyaml.git@5.3.1` |
   | local | `pip install ./pyyaml-5.3.1` |
   | local-backport | same tree + Ubuntu's CVE patch, rebuilt as version `5.3.1+acme1`: a backported fix ([RESULTS.md](RESULTS.md#setup)) |
+  | local-relabel | same unmodified tree, rebuilt as version `6.0.2`: vulnerable code with a fixed version label ([RESULTS.md](RESULTS.md#setup)) |
   | pypi-fixed | `pip install PyYAML==6.0.2` (control) |
 - **Ground truth** is `app/oracle.py`. It runs the public PoC with a harmless payload inside each container, so it never relies on a scanner.
 - **VEX** is written as the supplier would write it (`vexctl create`): the status comes from the oracle, and the product is the PURL the supplier knows it shipped.
@@ -49,8 +50,9 @@ SUPPLIER ("Example PSIRT")                      CONSUMER
    - Qualifiers in the statement's PURL must be on the component: a deb PURL copied from a Syft SBOM (`…&upstream=pyyaml`) is not applied to a Trivy SBOM.
 5. **`vexctl filter` on SARIF ignores the product.** It removes every finding whose ID has a `fixed` or `not_affected` statement: a statement about an unrelated npm package removed a real PyYAML finding.
 6. **Ubuntu's patched `constructor.py` is byte-for-byte identical to PyYAML 6.0.2's**, yet its Python metadata still says `5.3.1`.
+7. **Vulnerable code with a fixed version label is missed by every SBOM→scanner pair.** local-relabel is the unmodified 5.3.1 tree with only its version set to `6.0.2`; the exploit still works. Both SBOMs list `pkg:pypi/pyyaml@6.0.2`, the same PURL as the fixed control, and neither mentions 5.3.1 or the vulnerable file's hash. All four pairs report nothing (FN), with or without VEX: the supplier's `affected` statement cannot add a finding. This is local-backport in reverse.
 
-Against the oracle, 7 of the 28 SBOM→scanner results are wrong without VEX, 3 with `--vex`, and 4 with `vexctl filter`. The 3 left after `--vex` are all deb cases (results 1–2).
+Against the oracle, 11 of the 32 SBOM→scanner results are wrong without VEX, 7 with `--vex`, and 8 with `vexctl filter`. The 7 left after `--vex` are 3 deb cases (results 1–2) and the 4 local-relabel misses (result 7). local-relabel was added on 2026-11-05; `out/versions.txt` has its DB dates and the re-scan check that keeps it comparable with the 2026-10-08 run.
 
 ## Run it
 
@@ -64,7 +66,7 @@ python3 -I run.py                    # everything: fetch build evidence sbom vex
 podman run -it vexlab/git:1.0 bash   # inspect any variant; /app/evidence.sh prints what we collect
 
 # or just look at the reported run without rebuilding:
-tar -xJf out/scans-2026-10-08.tar.xz && python3 -I run.py report
+tar -xJf out/scans-2026-10-08.tar.xz && tar -xJf out/scans-2026-11-05-local-relabel.tar.xz && python3 -I run.py report
 python3 -I tools/validate.py         # independent check: recompute every row from the raw scans
 ```
 
@@ -80,5 +82,6 @@ out/<variant>/           evidence.txt, sbom.{syft,trivy}.cdx.json, *.openvex.jso
 out/tables.md            identity table and the full verdict matrix;  out/results.json
 out/probe/               root-cause probes (probes.txt) and VEX-matching probes
 out/scans-2026-10-08.tar.xz   raw scanner JSON + SARIF of the reported run
+out/scans-2026-11-05-local-relabel.tar.xz   the same for local-relabel, added 2026-11-05
 out/versions.txt         tool, vulnerability-DB and base-image versions
 ```

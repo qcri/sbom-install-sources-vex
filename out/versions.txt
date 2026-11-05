@@ -5,3 +5,4 @@ vexctl: v0.4.4
 base image: ubuntu:20.04 sha256:c664f8f86ed5a386b0a340d981b8f81714e21a8b9c73f658c4bea56aa179d54a (linux/amd64; pinned in variants/*/Containerfile)
 PyYAML sdist sha256: b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d (matches PyPI)
 out/probe/ regenerated 2026-10-13 from the committed SBOMs and scans: grype db v6.1.10 built 2026-10-13T06:35:20Z, trivy db 2026-10-13T06:41:11Z
+out/local-relabel/ built and scanned 2026-11-05 with the same tool images: grype db v6.1.10 built 2026-10-12T00:41:00Z, trivy db 2026-10-13T06:41:11Z (raw scans: out/scans-2026-11-05-local-relabel.tar.xz). Re-scanning the other seven variants' committed SBOMs with these DBs reproduced all 32 rows of the 2026-10-08 run.
