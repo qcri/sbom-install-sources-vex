@@ -2,7 +2,7 @@
 
 **Question.** The same PyYAML 5.3.1 code (CVE-2020-14343) is installed in different ways. Does the SBOM identify it correctly, does the scanner flag it correctly, and does a correct supplier VEX statement get applied?
 
-**Run it:** `python3 -I run.py` (stages: `fetch build evidence sbom vex scan report probe`). Raw scan output from the run reported here: `out/scans-2026-10-08.tar.xz`. Tool versions are in `out/versions.txt`: Syft 1.54.1, Grype 0.120.1 (DB built 2026-10-08), Trivy 0.75.0 (DB 2026-10-07), vexctl v0.4.4. Re-scanning every committed SBOM on 2026-10-13 with newer DBs gave the same 32 results; the probes in §4 are from that date. The variant local-relabel was added on 2026-11-05 (raw scans: `out/scans-2026-11-05-local-relabel.tar.xz`). It was scanned with the Grype DB built 2026-10-13 and the Trivy DB of 2026-10-13, and re-scanning the other seven variants' committed SBOMs with those DBs reproduced all 32 rows of the 2026-10-08 run.
+**Run it:** `python3 -I run.py` (stages: `fetch build evidence sbom vex scan report probe`). Raw scan output from the run reported here: `out/scans-2026-10-08.tar.xz`. Tool versions are in `out/versions.txt`: Syft 1.54.1, Grype 0.120.1 (DB built 2026-10-08), Trivy 0.75.0 (DB 2026-10-07), vexctl v0.4.4. Re-scanning every committed SBOM on 2026-10-13 with newer DBs gave the same 32 results; the probes in §4 are from that date. The variant local-relabel was added on 2026-11-05 (raw scans: `out/scans-2026-11-05-local-relabel.tar.xz`). It was built and scanned through a podman-to-docker shim, with Grype's and Trivy's DBs of 2026-10-13, and re-scanning the other seven variants' committed SBOMs with those DBs reproduced all 32 rows of the 2026-10-08 run.
 
 ## Terms
 
@@ -245,4 +245,6 @@ Two more probes on PURL qualifiers:
 - **`affected` statements** cannot change a scan's output, so "is the VEX applied?" is tested only on the three non-vulnerable variants and in the probes.
 - **Base image.** Ubuntu 20.04 is past standard support (Trivy warns about it; Grype uses the ESM channel). That is fine for this 2020 CVE, but newer advisories may be handled differently.
 - One CVE, one ecosystem, one version of each tool. Results are from 2026-10-08, except local-relabel (2026-11-05; DB dates in `out/versions.txt`).
-- Not yet run: cve-bin-tool and Dependency-Track (CycloneDX VEX path).
+- Not yet run: cve-bin-tool and Dependency-Track (CycloneDX VEX path), and Trivy with CSAF or CycloneDX VEX.
+- Not yet compared: Canonical's own OpenVEX statement for `python3-yaml`; its feed (`security-metadata.canonical.com/vex/`) returned 503 on 2026-10-08.
+- Not yet tested: runtime SBOMs, which record the import name `yaml` (does `pkg:pypi/yaml@5.3.1` match any advisory?), and a second ecosystem and CVE.
