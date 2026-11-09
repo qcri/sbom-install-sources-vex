@@ -43,24 +43,9 @@ The supplier builds each image, writes its SBOMs, and sets each VEX statement's 
 - **The backport gets both `fixed` and `not_affected` (`vulnerable_code_not_present`).** The scanners treat them the same; `fixed` fits CISA's definitions better ([RESULTS.md §5](RESULTS.md#5-mapping-to-cisa-findings-in-4)).
 - **Pinned tools, frozen databases.** Syft, Grype, Trivy and the base image are pinned by digest. The vulnerability databases are downloaded on first use and then frozen: `GRYPE_DB_AUTO_UPDATE=false` and `GRYPE_DB_VALIDATE_AGE=false` for Grype, `--skip-db-update` for Trivy.
 
-## Headline results
+## Results
 
-1. **A patched Ubuntu deb gets a false positive through Syft's CycloneDX SBOM.** Syft lists the deb and, separately, the Python metadata inside it, as `pkg:pypi/pyyaml@5.3.1`. That metadata keeps the upstream version, so Ubuntu's fix (`-1ubuntu0.1`) is invisible and both scanners match it against the PyPI advisory (`< 5.4`). In its own JSON and in SPDX, Syft marks the PyPI entry as owned by the deb, and Grype then drops it; the CycloneDX output loses that link. The supplier's correct deb VEX can't reach the finding.
-2. **Each scanner reads the deb's source package only from its own vendor's fields.** Ubuntu files the CVE under the source package `pyyaml`, not the binary package `python3-yaml`.
-   - Grype reads it from Syft's PURL qualifier `upstream=pyyaml` or property `syft:metadata:source`.
-   - Trivy reads it from its own property `aquasecurity:trivy:SrcName`.
-
-   So a Trivy SBOM fed to Grype misses the vulnerable deb (false negative), and a Syft SBOM fed to Trivy misses the deb component (it is reported only through the PyPI duplicate). This also holds with SPDX.
-3. **The PURL drops the install origin.** pypi, git and local installs all become `pkg:pypi/pyyaml@5.3.1`, except that Syft adds `vcs_url` for git. Syft keeps the git and local origin in `externalReferences`; Trivy keeps neither. Matching and VEX use the PURL.
-4. **`--vex` applies a statement when its product PURL and vulnerability ID match a finding, and both checks have sharp edges.**
-   - A statement whose product has no version, or has upstream's version (what a backport that kept `5.3.1` would need), also suppresses the real vulnerability in other images. The backport here stays contained only because its rebuild carries its own version, `+acme1`.
-   - A statement must list the ID each scanner uses: Grype keys this PyPI finding by its GHSA ID, Trivy by the CVE.
-   - Qualifiers in the statement's PURL must be on the component: a deb PURL copied from a Syft SBOM (`…&upstream=pyyaml`) is not applied to a Trivy SBOM.
-5. **`vexctl filter` on SARIF ignores the product.** It removes every finding whose ID has a `fixed` or `not_affected` statement: a statement about an unrelated npm package removed a real PyYAML finding.
-6. **Ubuntu's patched `constructor.py` is byte-for-byte identical to PyYAML 6.0.2's**, yet its Python metadata still says `5.3.1`.
-7. **Vulnerable code with a fixed version label is missed by every SBOM→scanner pair.** local-relabel is the unmodified 5.3.1 tree with only its version set to `6.0.2`; the exploit still works. Both SBOMs list `pkg:pypi/pyyaml@6.0.2`, the same PURL as the fixed control, and neither mentions 5.3.1 or the vulnerable file's hash. All four pairs report nothing (FN), with or without VEX: the supplier's `affected` statement cannot add a finding. This is local-backport in reverse.
-
-Against the oracle, 11 of the 32 SBOM→scanner results are wrong without VEX, 7 with `--vex`, and 8 with `vexctl filter`. The 7 left after `--vex` are 3 deb cases (results 1–2) and the 4 local-relabel misses (result 7).
+Against the oracle, 11 of the 32 SBOM→scanner results are wrong without VEX, 7 with `--vex`, and 8 with `vexctl filter`. [RESULTS.md](RESULTS.md) explains each wrong verdict, and the [article](article/article.md) summarises what they mean.
 
 The results are from the run of 2026-10-08, plus local-relabel on 2026-11-05. RESULTS.md gives the database dates and re-scan checks, `out/versions.txt` the exact versions. Open work is in the [issues](https://github.com/JK-code505/sbom-install-sources-vex/issues) and in RESULTS.md's [limits and next steps](RESULTS.md#limits--next-steps).
 
