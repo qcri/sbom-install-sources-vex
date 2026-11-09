@@ -2,7 +2,7 @@
 
 **Question.** The same PyYAML 5.3.1 code (CVE-2020-14343) is installed in different ways. Does the SBOM identify it correctly, does the scanner flag it correctly, and does a correct supplier VEX statement get applied?
 
-**Run it:** `python3 -I run.py` (stages: `fetch build evidence sbom vex scan report probe`). Raw scan output from the run reported here: `out/scans-2026-10-08.tar.xz`. Tool versions are in `out/versions.txt`: Syft 1.54.1, Grype 0.120.1 (DB built 2026-10-08), Trivy 0.75.0 (DB 2026-10-07), vexctl v0.4.4. Re-scanning every committed SBOM on 2026-10-13 with newer DBs gave the same 32 results; the probes in §4 are from that date. The variant local-relabel was added on 2026-11-05 (raw scans: `out/scans-2026-11-05-local-relabel.tar.xz`). It was scanned with the Grype DB built 2026-10-12 and the Trivy DB of 2026-10-13, and re-scanning the other seven variants' committed SBOMs with those DBs reproduced all 32 rows of the 2026-10-08 run.
+**Run it:** `python3 -I run.py` (stages: `fetch build evidence sbom vex scan report probe`). Raw scan output from the run reported here: `out/scans-2026-10-08.tar.xz`. Tool versions are in `out/versions.txt`: Syft 1.54.1, Grype 0.120.1 (DB built 2026-10-08), Trivy 0.75.0 (DB 2026-10-07), vexctl v0.4.4. Re-scanning every committed SBOM on 2026-10-13 with newer DBs gave the same 32 results; the probes in §4 are from that date. The variant local-relabel was added on 2026-11-05 (raw scans: `out/scans-2026-11-05-local-relabel.tar.xz`). It was scanned with the Grype DB built 2026-10-13 and the Trivy DB of 2026-10-13, and re-scanning the other seven variants' committed SBOMs with those DBs reproduced all 32 rows of the 2026-10-08 run.
 
 ## Terms
 
