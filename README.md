@@ -11,12 +11,9 @@ Part of the [Agentic AI Security](https://cs.qcri.org/agentic_-ai_security/) res
 
 ## Design
 
-```
-SUPPLIER ("Example PSIRT")                      CONSUMER
- build image ─► SBOM (Syft | Trivy) ─────────────► SBOM ─┐
-      └─► oracle.py (PoC in the container) ─► VEX ─► VEX ─┴─► scanner (Grype | Trivy) ─► findings
-                                     (vexctl create)            --vex  or  vexctl filter on SARIF
-```
+<img src="article/figures/sbom-vex-pipeline.png" width="760" alt="Pipeline: on the supplier side, each image goes to an SBOM generator and to the oracle, which sets the status of the VEX statement; on the consumer side, Grype or Trivy scans the SBOM and applies the VEX statement with --vex, or vexctl filter applies it to their SARIF report; each verdict is compared with the oracle">
+
+The supplier builds each image, writes its SBOMs, and sets each VEX statement's status from the oracle. The consumer scans each SBOM and applies the statement with `--vex` or, after the scan, with `vexctl filter`.
 
 - **8 images, all `ubuntu:20.04` / Python 3.8.10.** Only the install method differs:
 
